@@ -1,0 +1,22 @@
+.sightings-map { height: 100%; width: 100%; background: var(--soft); font-family: var(--font-geist-sans), sans-serif; }
+.sightings-marker { display: grid; place-items: center; background: transparent; border: 0; }
+.sightings-marker > span:not(.shark-map-glyph) { display: grid; place-items: center; width: 22px; height: 22px; border: 1px solid var(--foreground); border-radius: 50%; color: var(--background); background: var(--primary); font-size: 10px; font-weight: 700; box-shadow: 0 2px 8px #000b; }
+.sightings-marker--pending { color: #ffd45e; }
+.sightings-marker--verified { color: #55e6a5; }
+.sightings-marker--rejected { color: #ff817c; }
+.sightings-marker--group > span { background: var(--primary); }
+.sightings-marker--group > span { width: 22px; height: 22px; font-size: 10px; }
+.sightings-marker:focus-visible { outline: 3px solid var(--foreground); outline-offset: 2px; border-radius: 50%; }
+.sightings-map .leaflet-popup-content-wrapper, .sightings-map .leaflet-popup-tip { color: var(--foreground); background: var(--surface); }
+.sightings-map .leaflet-popup-content-wrapper { border: 1px solid var(--control-border); border-radius: 16px; }
+.sightings-map .leaflet-popup-content { margin: 44px 16px 16px; max-width: calc(100vw - 96px); font-size: 1rem; line-height: 1.6; overscroll-behavior: contain; }
+.sightings-map .leaflet-popup-content p { margin: 10px 0; }
+.sightings-map .leaflet-popup-content select { max-width: 100%; }
+.sightings-map a.leaflet-popup-close-button { left: 4px; right: auto; width: 44px; height: 44px; color: var(--foreground); line-height: 44px; font-size: 26px; border-radius: 50%; }
+.sightings-map .leaflet-control-zoom a { width: 44px; height: 44px; line-height: 44px; background: var(--surface); color: var(--foreground); }
+.workspace-page .sightings-map .leaflet-control-attribution { color: var(--muted); background: var(--surface); font-size: .75rem; }
+.workspace-page .sightings-map .leaflet-control-attribution a { color: var(--primary); }
+.sightings-map .leaflet-popup-content .button { color: var(--foreground); }
+.sighting-popup { overflow-wrap: anywhere; }
+.sighting-popup .observation-details dl { grid-template-columns: 1fr; }
+@media (pointer: coarse) { .workspace-page .sightings-map.leaflet-container { touch-action: pan-y pinch-zoom; } }

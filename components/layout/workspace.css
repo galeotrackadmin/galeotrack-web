@@ -1,0 +1,88 @@
+/* Espacios autenticados: base móvil y ampliaciones progresivas. */
+.workspace-main { padding-block: 24px 40px; }
+.workspace-page :is(h2, h3, p, dd) { overflow-wrap: anywhere; }
+.workspace-page .page-hero--compact { margin-bottom: 24px; border-radius: 16px; }
+.workspace-page .page-hero--compact .page-hero-content { width: 100%; max-width: 72ch; padding: 24px 20px; }
+.workspace-page .page-hero--compact h1 { margin-top: 12px; font-size: clamp(1.75rem, 3vw + .5rem, 2.75rem); line-height: 1.15; }
+.workspace-page .page-hero--compact .page-hero-description { margin-top: 16px; max-width: 60ch; line-height: 1.65; }
+.workspace-page .page-hero--compact .page-hero-actions { margin-top: 20px; }
+.workspace-page .page-hero--compact .page-hero-actions .button { width: 100%; }
+.workspace-shortcuts { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; margin-bottom: 32px; }
+.workspace-shortcuts .button { justify-content: space-between; min-width: 0; min-height: 48px; font-size: 1rem; }
+.workspace-sections { display: grid; gap: 40px; }
+.workspace-section-head { display: flex; flex-direction: column; align-items: stretch; gap: 16px; }
+.workspace-section-head > div { min-width: 0; }
+.workspace-section-head > .button { width: 100%; }
+.workspace-controls { display: grid; grid-template-columns: minmax(0, 1fr); align-items: end; gap: 16px; }
+.workspace-controls > div { min-width: 0; }
+.workspace-controls .button { width: 100%; }
+.workspace-form { padding: 20px; }
+.workspace-form-actions { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.workspace-form-actions .button { width: 100%; }
+.workspace-list .sighting-actions { width: 100%; align-items: stretch; }
+.workspace-list .sighting-review-buttons { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; gap: 12px; }
+.workspace-list .sighting-review-buttons .button { min-width: 0; padding-inline: 12px; }
+.workspace-note { font-size: .875rem; line-height: 1.65; color: var(--muted); }
+.workspace-pagination { display: flex; flex-direction: column; align-items: stretch; gap: 12px; margin-top: 24px; }
+.workspace-pagination > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.workspace-page main :is(section, h2, h3)[id] { scroll-margin-top: var(--navbar-anchor-offset); }
+.account-settings { max-width: 960px; margin-inline: auto; }
+.account-card { padding: 20px; }
+.account-meta { display: grid; gap: 12px; }
+.account-meta > div { min-width: 0; }
+.account-meta dt { color: var(--muted); font-size: .8rem; }
+.account-meta dd { margin-top: 3px; overflow-wrap: anywhere; font-weight: 600; }
+.account-history { display: grid; gap: 10px; padding-left: 20px; list-style: disc; }
+.account-history li { padding-left: 4px; }
+.account-history li > span { display: block; color: var(--muted); font-size: .875rem; }
+.account-history li > p { margin-top: 4px; color: var(--muted); font-size: .875rem; }
+.account-delete-card { border-color: color-mix(in srgb, var(--danger) 50%, var(--border)); }
+.workspace-page :is(#especies, #publicaciones) .article-body { font-size: 1rem; line-height: 1.65; }
+.workspace-page #publicaciones article { padding: 20px; }
+.sightings-map-frame { height: 320px; }
+.workspace-page .sighting-location, .workspace-page .sighting-summary { font-size: 1rem; line-height: 1.65; }
+.workspace-page .editorial-banner--compact .editorial-banner-media { min-height: 120px; }
+.workspace-page .editorial-banner--compact .editorial-banner-copy { padding: 20px; }
+.workspace-page .editorial-banner--compact h3 { font-size: 1.25rem; }
+.sighting-stats { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.sighting-stat { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 16px; padding: 16px; }
+.sighting-stat dt { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: .875rem; }
+.sighting-stat-icon { display: grid; place-items: center; flex-shrink: 0; width: 36px; height: 36px; border-radius: 10px; }
+.sighting-stat dd { text-align: right; }
+.sighting-stat-value { display: block; color: var(--foreground); font-size: 1.75rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.sighting-stat-caption { display: block; max-width: 20ch; color: var(--muted); font-size: .75rem; }
+.admin-section { margin-top: 32px; }
+.admin-map { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); }
+.workspace-pagination.admin-pagination > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.admin-pagination > div > p { grid-column: 1 / -1; grid-row: 1; text-align: center; font-size: .875rem; }
+@media (pointer: coarse) { .workspace-page .page-hero--compact .page-hero-actions .button { min-height: 48px; } }
+@media (min-width: 768px) {
+  .account-card { padding: 28px; }
+  .account-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sightings-map-frame { height: 400px; }
+  .workspace-page #publicaciones article { padding: 24px; }
+  .workspace-main { padding-block: 32px 48px; }
+  .workspace-shortcuts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .workspace-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .workspace-form { padding: 24px; }
+  .workspace-form-actions { display: flex; flex-wrap: wrap; }
+  .workspace-form-actions .button { width: auto; }
+  .workspace-pagination { flex-direction: row; align-items: center; justify-content: space-between; }
+  .sighting-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .sighting-stat { grid-template-columns: minmax(0, 1fr); }
+  .sighting-stat dd { text-align: left; }
+  .sighting-stat-caption { max-width: none; }
+}
+@media (min-width: 1200px) { .sightings-map-frame { height: 480px; } }
+@media (min-width: 1024px) {
+  .workspace-page .page-hero--compact .page-hero-content { padding: 32px; }
+  .workspace-page .page-hero--compact .page-hero-actions .button { width: auto; }
+  .workspace-shortcuts { display: flex; flex-wrap: wrap; }
+  .workspace-section-head { flex-direction: row; align-items: end; justify-content: space-between; }
+  .workspace-section-head > .button { width: auto; }
+  .workspace-controls { display: flex; flex-wrap: wrap; }
+  .workspace-controls .button { width: auto; }
+  .workspace-list .sighting-actions { width: auto; align-items: flex-end; }
+  .workspace-list .sighting-review-buttons { display: flex; flex-wrap: wrap; }
+  .workspace-sections { gap: 48px; }
+}

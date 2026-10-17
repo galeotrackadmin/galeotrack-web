@@ -1,0 +1,59 @@
+.statistics-dashboard { display: grid; gap: 20px; min-width: 0; padding-block: 8px; }
+.statistics-heading { display: flex; flex-wrap: wrap; align-items: start; justify-content: space-between; gap: 16px; }
+.statistics-heading > div { min-width: 0; flex: 1 1 280px; }
+.statistics-heading h3 { margin-top: 8px; color: var(--foreground); font-size: 1.5rem; font-weight: 650; line-height: 1.3; }
+.statistics-heading p:not(.section-eyebrow) { max-width: 80ch; margin-top: 8px; color: var(--muted); font-size: .875rem; line-height: 1.65; }
+.statistics-controls { display: grid; grid-template-columns: minmax(0, 1fr); align-items: end; gap: 16px; padding: 20px; border: 1px solid var(--border); border-radius: var(--radius-card); background: var(--surface); }
+.statistics-controls > div { min-width: 0; }
+.statistics-controls label { display: block; margin-bottom: 8px; font-size: .875rem; font-weight: 600; }
+.statistics-controls select { width: 100%; min-width: 0; text-overflow: ellipsis; }
+.statistics-checkbox { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 8px 0; font-size: .875rem; cursor: pointer; }
+.statistics-checkbox input { flex: 0 0 auto; width: 20px; height: 20px; accent-color: var(--primary); }
+.statistics-method, .statistics-result { color: var(--muted); font-size: .875rem; line-height: 1.65; }
+.statistics-loading { min-height: 24px; color: var(--muted); }
+.statistics-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.statistics-metric { min-width: 0; padding: 20px; }
+.statistics-metric dt { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--muted); font-size: .875rem; font-weight: 500; overflow-wrap: anywhere; }
+.statistics-metric dt svg { flex-shrink: 0; color: var(--primary); }
+.statistics-metric dd { margin-top: 12px; }
+.statistics-metric dd strong { display: block; color: var(--foreground); font-size: 2rem; font-weight: 650; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.statistics-metric dd > span { display: block; margin-top: 8px; color: var(--muted); font-size: .75rem; line-height: 1.5; }
+.statistics-charts { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; min-width: 0; }
+.statistics-chart, .statistics-quality { min-width: 0; padding: 20px; }
+.statistics-chart h4, .statistics-quality h4, .statistics-batches h4 { font-size: 1.125rem; font-weight: 650; line-height: 1.4; }
+.statistics-chart figcaption > p, .statistics-quality > p, .statistics-batches p { margin-top: 8px; color: var(--muted); font-size: .875rem; line-height: 1.65; }
+.statistics-chart-visual { min-width: 0; height: min(var(--statistics-chart-height), 25rem); margin-top: 20px; overflow-x: hidden; overflow-y: auto; scrollbar-gutter: stable; }
+.statistics-echart { width: 100%; min-width: 0; height: var(--statistics-chart-height); }
+.statistics-chart-loading { padding: 24px 0; color: var(--muted); font-size: .875rem; line-height: 1.65; }
+.statistics-table { margin-top: 20px; border-top: 1px solid var(--border); }
+.statistics-table summary { min-height: 44px; padding-block: 12px; color: var(--primary); font-size: .875rem; font-weight: 600; cursor: pointer; }
+.statistics-table table { width: 100%; margin-top: 8px; table-layout: fixed; border-collapse: collapse; font-size: .875rem; }
+.statistics-table :is(th, td) { padding: 10px 4px; text-align: left; border-bottom: 1px solid var(--border); overflow-wrap: anywhere; }
+.statistics-table th:last-child, .statistics-table td:last-child { width: 30%; text-align: right; font-variant-numeric: tabular-nums; }
+.statistics-table--percentages :is(th, td):first-child { width: 44%; }
+.statistics-table--percentages :is(th, td):nth-child(2) { width: 26%; text-align: right; font-variant-numeric: tabular-nums; }
+.statistics-health-legend { display: grid; gap: 16px; margin-top: 20px; }
+.statistics-health-legend li { display: grid; gap: 6px; font-size: .875rem; }
+.statistics-health-legend li > div { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
+.statistics-health-legend strong { flex-shrink: 0; color: var(--foreground); font-variant-numeric: tabular-nums; }
+.statistics-health-legend li > span:not(.statistics-health-track) { color: var(--muted); }
+.statistics-health-track { display: block; height: 8px; overflow: hidden; border-radius: 999px; background: var(--soft); }
+.statistics-health-track > span { display: block; height: 100%; background: var(--muted); }
+.statistics-health-track--success > span { background: var(--success); }
+.statistics-health-track--warning > span { background: var(--warning); }
+.statistics-health-note, .statistics-health-signs p { margin-top: 16px; color: var(--muted); font-size: .875rem; line-height: 1.65; }
+.statistics-health-signs dl { display: grid; gap: 12px; margin-top: 16px; }
+.statistics-health-signs dl > div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; font-size: .875rem; }
+.statistics-health-signs dd { font-weight: 650; font-variant-numeric: tabular-nums; }
+.statistics-empty { margin-top: 20px; padding-block: 20px; color: var(--muted); font-size: .875rem; }
+.statistics-quality dl { display: grid; gap: 12px; margin-top: 20px; }
+.statistics-quality dl > div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); font-size: .875rem; }
+.statistics-quality dt { color: var(--muted); }
+.statistics-quality dd { color: var(--foreground); font-weight: 700; font-variant-numeric: tabular-nums; }
+.statistics-batches { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; padding: 20px; }
+.statistics-batches > div { flex: 1 1 240px; min-width: 0; }
+.statistics-batches dl { display: flex; flex-wrap: wrap; gap: 24px; }
+.statistics-batches dt { color: var(--muted); font-size: .875rem; }
+.statistics-batches dd { margin-top: 4px; font-size: 1.5rem; font-weight: 650; }
+@media (min-width: 640px) { .statistics-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 900px) { .statistics-controls { grid-template-columns: repeat(3, minmax(0, 1fr)); } .statistics-metrics { grid-template-columns: repeat(4, minmax(0, 1fr)); } .statistics-charts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

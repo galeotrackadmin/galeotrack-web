@@ -1,0 +1,59 @@
+/* Base móvil: una columna, lectura cómoda y mapa compacto compartido. */
+.distribution-page .page-container { max-width: 1240px; }
+.distribution-hero { padding-block: 24px 32px; }
+.distribution-hero h1 { max-width: 28ch; margin-top: 12px; font-size: clamp(1.85rem, 4vw + .5rem, 3.5rem); font-weight: 500; line-height: 1.15; letter-spacing: -.035em; text-wrap: balance; overflow-wrap: anywhere; }
+.distribution-hero > p:last-child { max-width: 65ch; margin-top: 16px; color: var(--landing-muted); font-size: 1rem; line-height: 1.65; }
+.distribution-map-intro { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; gap: 16px; padding-bottom: 24px; }
+.distribution-map-intro > div { min-width: 0; }
+.distribution-page :is(.distribution-map-intro, .distribution-section, .distribution-guide, .distribution-cta) h2 { margin-top: 12px; font-size: clamp(1.5rem, 3vw + .5rem, 2.5rem); font-weight: 500; line-height: 1.2; letter-spacing: -.035em; text-wrap: balance; overflow-wrap: anywhere; }
+.distribution-map-intro > p, .distribution-section-heading > p:last-child { max-width: 65ch; color: var(--landing-muted); font-size: 1rem; line-height: 1.65; }
+.distribution-map-caption { padding-block: 16px 32px; color: var(--landing-muted); font-size: .875rem; line-height: 1.65; }
+.distribution-section { padding-block: 40px; border-top: 1px solid var(--landing-line); }
+.distribution-section-heading { max-width: 65ch; margin-bottom: 24px; }
+.distribution-section-heading > p:last-child { margin-top: 16px; }
+.distribution-data-note { max-width: 75ch; margin-bottom: 32px; padding: 20px; border: 1px solid var(--landing-line); border-radius: 16px; background: var(--landing-panel); }
+.distribution-data-note h3 { color: var(--foreground); font-size: 1rem; font-weight: 600; }
+.distribution-data-note p, .distribution-analysis-heading > p:last-child { max-width: 65ch; margin-top: 8px; color: var(--landing-muted); font-size: 1rem; line-height: 1.65; }
+.distribution-analysis-heading { margin-bottom: 24px; }
+.distribution-indicators { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.distribution-indicator { min-width: 0; padding: 20px; border: 1px solid var(--landing-line); border-radius: 16px; background: var(--landing-panel); overflow-wrap: anywhere; }
+.distribution-indicator > span { color: var(--cyan); font-size: .75rem; letter-spacing: .16em; }
+.distribution-indicator h3 { margin-top: 16px; font-size: 1.125rem; line-height: 1.4; font-weight: 600; }
+.distribution-indicator p { max-width: 65ch; margin-top: 12px; color: var(--landing-muted); font-size: 1rem; line-height: 1.65; }
+.distribution-guide { border-block: 1px solid var(--landing-line); background: var(--landing-panel); }
+.distribution-guide-inner { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; padding-block: 40px; }
+.distribution-guide-inner > div { min-width: 0; }
+.distribution-guide-inner > div:last-child > p { max-width: 65ch; color: var(--landing-muted); font-size: 1rem; line-height: 1.65; }
+.distribution-guide-inner > div:last-child > p + p { margin-top: 16px; }
+.distribution-guide .landing-button { width: 100%; margin-top: 24px; }
+.distribution-reference-list { padding: 8px 16px; border: 1px solid var(--landing-line); border-radius: 16px; background: var(--landing-panel); }
+.distribution-reference-list summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 48px; padding-block: 8px; color: var(--foreground); font-size: 1rem; font-weight: 600; list-style: none; overflow-wrap: anywhere; }
+.distribution-reference-list summary::-webkit-details-marker { display: none; }
+.distribution-reference-list summary > svg { flex-shrink: 0; transition: transform var(--duration); }
+.distribution-reference-list[open] summary > svg { transform: rotate(90deg); }
+.distribution-references { display: grid; gap: 16px; max-width: 75ch; margin-block: 16px; padding-left: 20px; color: var(--landing-muted); font-size: 1rem; line-height: 1.65; list-style: decimal; }
+.distribution-references li { padding-left: 4px; overflow-wrap: anywhere; }
+.distribution-references li::marker { color: var(--cyan); }
+.distribution-cta { border-top: 1px solid var(--landing-line); background: var(--landing-panel); }
+.distribution-cta-inner { display: flex; flex-direction: column; align-items: flex-start; gap: 24px; padding-block: 40px; }
+.distribution-cta-inner > div { min-width: 0; max-width: 65ch; }
+.distribution-cta-inner > div > p:last-child { margin-top: 12px; color: var(--landing-muted); font-size: 1rem; line-height: 1.65; }
+.distribution-cta .landing-button { width: 100%; }
+@media (min-width: 768px) {
+  .distribution-hero { padding-block: 32px 40px; }
+  .distribution-section, .distribution-guide-inner { padding-block: 48px; }
+  .distribution-map-caption { padding-bottom: 40px; }
+  .distribution-indicator { padding: 24px; }
+  .distribution-reference-list { padding-inline: 24px; }
+  .distribution-guide .landing-button, .distribution-cta .landing-button { width: auto; }
+  .distribution-cta-inner { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; padding-block: 48px; }
+}
+@media (min-width: 1024px) {
+  .distribution-map-intro { grid-template-columns: minmax(0, 1fr) minmax(0, .85fr); align-items: end; gap: 32px; }
+  .distribution-indicators { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+  .distribution-guide-inner { grid-template-columns: minmax(0, .85fr) minmax(0, 1fr); gap: 48px; }
+}
+@media (min-width: 1200px) {
+  .distribution-hero { padding-block: 40px 48px; }
+  .distribution-section, .distribution-guide-inner { padding-block: 64px; }
+}

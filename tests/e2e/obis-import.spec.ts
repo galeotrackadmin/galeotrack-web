@@ -1,0 +1,65 @@
+import { readFile } from 'node:fs/promises'
+import AxeBuilder from '@axe-core/playwright'
+import { test, expect, login } from './fixtures'
+
+test('OBIS: vista previa de 115 registros, importación pendiente, reintento y retirada/restauración por lote', async ({ page, backend }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await login(page)
+  await page.goto('/gestion#importaciones')
+  await expect(page.getByRole('heading', { name: 'Importaciones por lote', exact: true })).toBeVisible()
+  const csv = await readFile('avistamientos-obis-datos.csv')
+  const input = page.getByLabel('Archivo CSV de OBIS', { exact: false })
+  await input.setInputFiles({ name: 'avistamientos-obis-datos.csv', mimeType: 'text/csv', buffer: csv })
+  await expect(page.getByText('Vista previa: avistamientos-obis-datos.csv · 115 registros')).toBeVisible()
+  await expect(page.getByText('31 filas repetidas: se conservan y se señalan.')).toBeVisible()
+  expect(backend.importPayloads).toHaveLength(0)
+  page.once('dialog', (dialog) => dialog.accept())
+  await page.getByRole('button', { name: 'Importar 115 registros como pendientes' }).click()
+  await expect(page.getByText(/Lote OBIS registrado: 115 filas/)).toBeVisible()
+  expect(backend.importPayloads[0]).toHaveLength(115)
+  expect(backend.importPayloads[0][0]).not.toHaveProperty('reporter_id')
+  expect(backend.importBatches[0].status).toBe('pending')
+  expect(backend.importBatches[0].duplicate_count).toBe(31)
+  const originalCommunityRows = JSON.stringify(backend.rows)
+
+  await input.setInputFiles({ name: 'avistamientos-obis-datos.csv', mimeType: 'text/csv', buffer: csv })
+  page.once('dialog', (dialog) => dialog.accept())
+  await page.getByRole('button', { name: 'Importar 115 registros como pendientes' }).click()
+  await expect(page.getByText(/Lote OBIS registrado: 115 filas/)).toBeVisible()
+  expect(backend.importBatches).toHaveLength(1)
+  page.once('dialog', (dialog) => dialog.accept())
+  await page.getByRole('button', { name: 'Retirar lote completo' }).click()
+  await expect(page.getByText('Estado: Retirado', { exact: true })).toBeVisible()
+  expect(JSON.stringify(backend.rows)).toBe(originalCommunityRows)
+  page.once('dialog', (dialog) => dialog.accept())
+  await page.getByRole('button', { name: 'Restaurar lote' }).click()
+  await expect(page.getByText('Estado: Importado para revisión', { exact: true })).toBeVisible()
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+  const accessibility = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).exclude('nextjs-portal').analyze()
+  expect(accessibility.violations).toEqual([])
+})
+
+test('CSV inválido no permite importar y un estudiante no accede al importador', async ({ page, backend }) => {
+  await login(page)
+  await page.goto('/gestion#importaciones')
+  await page.getByLabel('Archivo CSV de OBIS', { exact: false }).setInputFiles({ name: 'incorrecto.csv', mimeType: 'text/csv', buffer: Buffer.from('nombre,fecha\nTiburon,2020') })
+  await expect(page.getByRole('region', { name: 'Importaciones por lote', exact: true }).getByRole('alert')).toContainText('columnas no coinciden')
+  await expect(page.getByRole('button', { name: /Importar \d+ registros/ })).toHaveCount(0)
+  expect(backend.importPayloads).toHaveLength(0)
+  backend.profileRole = 'student'
+  await page.goto('/gestion')
+  await expect(page.getByRole('heading', { name: 'Este espacio no está disponible para tu perfil.' })).toBeVisible()
+  await expect(page.getByLabel('Archivo CSV de OBIS', { exact: false })).toHaveCount(0)
+})
+
+test('registro histórico: fuente visible y fecha parcial sin inventar un día ni permitir editar el original', async ({ page, backend }) => {
+  backend.rows[0] = { ...backend.rows[0], species: 'Ginglymostoma cirratum', reporter_id: null, collaborator_role: null, import_batch_id: 'batch-test', source_name: 'OBIS', source_date: '2021_04', sighting_date: null, source_year: 2021, source_month: 4, date_precision: 'month', sighting_time: null, quality_flags: ['partial_date', 'possible_duplicate'] }
+  await login(page)
+  const article = page.getByRole('article', { name: 'Ginglymostoma cirratum', exact: true })
+  await expect(article.getByText('Registro histórico · OBIS')).toBeVisible()
+  await expect(article.getByText('abril de 2021', { exact: true })).toBeVisible()
+  await expect(article.getByRole('link', { name: /Editar/ })).toHaveCount(0)
+  await article.getByText('Ficha completa y evidencia', { exact: true }).click()
+  await expect(article.getByText('Fecha parcial: no se inventó un día')).toBeVisible()
+  await expect(article.getByText('2021-04-01')).toHaveCount(0)
+})
