@@ -37,6 +37,11 @@
 # local source workbook (the app uses generated JSON)
 /Occurrence (1).xlsx
 
+# local AI agent tools and machine-specific configuration
+/.agents/
+/.opencode/
+/opencode.json
+
 # debug
 npm-debug.log*
 yarn-debug.log*
