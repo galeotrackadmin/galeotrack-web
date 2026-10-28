@@ -16,6 +16,7 @@
 .sightings-map .leaflet-control-zoom a { width: 44px; height: 44px; line-height: 44px; background: var(--surface); color: var(--foreground); }
 .workspace-page .sightings-map .leaflet-control-attribution { color: var(--muted); background: var(--surface); font-size: .75rem; }
 .workspace-page .sightings-map .leaflet-control-attribution a { color: var(--primary); }
+.sightings-map .leaflet-control-attribution a { text-decoration: underline; }
 .sightings-map .leaflet-popup-content .button { color: var(--foreground); }
 .sighting-popup { overflow-wrap: anywhere; }
 .sighting-popup .observation-details dl { grid-template-columns: 1fr; }

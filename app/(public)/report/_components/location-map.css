@@ -2,7 +2,8 @@
 .galeo-map-marker { color: var(--primary); background: transparent; border: 0; }
 .galeo-map .leaflet-control-zoom { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; box-shadow: var(--shadow-card); }
 .galeo-map .leaflet-control-zoom a { width: 44px; height: 44px; line-height: 44px; color: var(--foreground); background: var(--surface); }
-.galeo-map .leaflet-control-zoom a:hover { background: var(--soft); }
+.galeo-map .leaflet-control-zoom a:active { background: var(--soft); }
+@media (hover: hover) and (pointer: fine) { .galeo-map .leaflet-control-zoom a:hover { background: var(--soft); } }
 .galeo-map .leaflet-control-zoom a:focus-visible { outline: 3px solid var(--primary); outline-offset: -4px; }
 .galeo-map .leaflet-control-attribution { background: var(--surface); color: var(--muted); font-size: 12px; }
 .galeo-map .leaflet-control-attribution a { color: var(--primary); }

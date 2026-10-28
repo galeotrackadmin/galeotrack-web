@@ -1,0 +1,248 @@
+{
+  "source": "Occurrence (1).xlsx",
+  "sha256": "4e3ffd02c127e7ad41efcc0837b61db42306abe5a4cdff86d2ad093539c6254a",
+  "totalRecords": 115,
+  "unknownYears": 43,
+  "depthField": "maximumDepthInMeters",
+  "abundance": [
+    {
+      "label": "Ginglymostoma cirratum",
+      "value": 38,
+      "display": "38"
+    },
+    {
+      "label": "Carcharhinus perezii",
+      "value": 13,
+      "display": "13"
+    },
+    {
+      "label": "Galeus arae",
+      "value": 9,
+      "display": "9"
+    },
+    {
+      "label": "Etmopterus hillianus",
+      "value": 9,
+      "display": "9"
+    },
+    {
+      "label": "Squalus cubensis",
+      "value": 8,
+      "display": "8"
+    },
+    {
+      "label": "Negaprion brevirostris",
+      "value": 6,
+      "display": "6"
+    },
+    {
+      "label": "Mustelus canis",
+      "value": 4,
+      "display": "4"
+    },
+    {
+      "label": "Centrophorus uyato",
+      "value": 4,
+      "display": "4"
+    },
+    {
+      "label": "Scyliorhinus torrei",
+      "value": 3,
+      "display": "3"
+    },
+    {
+      "label": "Heptranchias perlo",
+      "value": 3,
+      "display": "3"
+    },
+    {
+      "label": "Carcharhinus limbatus",
+      "value": 3,
+      "display": "3"
+    },
+    {
+      "label": "Hexanchus vitulus",
+      "value": 2,
+      "display": "2"
+    },
+    {
+      "label": "Carcharhinus",
+      "value": 2,
+      "display": "2"
+    },
+    {
+      "label": "Springeria longirostris",
+      "value": 1,
+      "display": "1"
+    },
+    {
+      "label": "Sphyrna lewini",
+      "value": 1,
+      "display": "1"
+    },
+    {
+      "label": "Scyliorhinus hesperius",
+      "value": 1,
+      "display": "1"
+    },
+    {
+      "label": "Scyliorhinus boa",
+      "value": 1,
+      "display": "1"
+    },
+    {
+      "label": "Negaprion",
+      "value": 1,
+      "display": "1"
+    },
+    {
+      "label": "Mustelus",
+      "value": 1,
+      "display": "1"
+    },
+    {
+      "label": "Galeus antillensis",
+      "value": 1,
+      "display": "1"
+    },
+    {
+      "label": "Centrophorus granulosus",
+      "value": 1,
+      "display": "1"
+    },
+    {
+      "label": "Carcharhinus leucas",
+      "value": 1,
+      "display": "1"
+    },
+    {
+      "label": "Carcharhinus falciformis",
+      "value": 1,
+      "display": "1"
+    },
+    {
+      "label": "Carcharhinus acronotus",
+      "value": 1,
+      "display": "1"
+    }
+  ],
+  "temporal": [
+    {
+      "label": "1933",
+      "value": 1,
+      "display": "1"
+    },
+    {
+      "label": "1959",
+      "value": 5,
+      "display": "5"
+    },
+    {
+      "label": "1987",
+      "value": 10,
+      "display": "10"
+    },
+    {
+      "label": "2004",
+      "value": 9,
+      "display": "9"
+    },
+    {
+      "label": "2005",
+      "value": 2,
+      "display": "2"
+    },
+    {
+      "label": "2006",
+      "value": 2,
+      "display": "2"
+    },
+    {
+      "label": "2007",
+      "value": 2,
+      "display": "2"
+    },
+    {
+      "label": "2008",
+      "value": 2,
+      "display": "2"
+    },
+    {
+      "label": "2009",
+      "value": 12,
+      "display": "12"
+    },
+    {
+      "label": "2010",
+      "value": 6,
+      "display": "6"
+    },
+    {
+      "label": "2011",
+      "value": 2,
+      "display": "2"
+    },
+    {
+      "label": "2013",
+      "value": 2,
+      "display": "2"
+    },
+    {
+      "label": "2014",
+      "value": 2,
+      "display": "2"
+    },
+    {
+      "label": "2015",
+      "value": 10,
+      "display": "10"
+    },
+    {
+      "label": "2016",
+      "value": 1,
+      "display": "1"
+    },
+    {
+      "label": "2019",
+      "value": 2,
+      "display": "2"
+    },
+    {
+      "label": "2020",
+      "value": 2,
+      "display": "2"
+    }
+  ],
+  "depth": [
+    {
+      "label": "Carcharhinus limbatus",
+      "value": 35.0,
+      "display": "35",
+      "sampleSize": 2
+    },
+    {
+      "label": "Carcharhinus perezii",
+      "value": 26.384615384615383,
+      "display": "26.38461538",
+      "sampleSize": 13
+    },
+    {
+      "label": "Ginglymostoma cirratum",
+      "value": 23.436052631578946,
+      "display": "23.43605263",
+      "sampleSize": 38
+    },
+    {
+      "label": "Negaprion brevirostris",
+      "value": 13.0,
+      "display": "13",
+      "sampleSize": 5
+    },
+    {
+      "label": "Squalus cubensis",
+      "value": 329.0,
+      "display": "329",
+      "sampleSize": 1
+    }
+  ]
+}

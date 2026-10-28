@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { FormField, Input, Textarea } from '@/components/ui/form-field'
 import { Alert } from '@/components/ui/alert'
 import { ResourceState, Pagination } from './resource-state'
+import { useUpdateGuard } from '@/lib/pwa/use-update-guard'
 
 const featuredSpecies = [
   { scientificName: 'Ginglymostoma cirratum', image: '/images/sharks/Ginglymostoma_cirratum.webp', description: 'Cuerpo robusto y dos barbillas sensoriales junto a la boca. Suele descansar durante el día sobre fondos arenosos y arrecifes.', habitat: 'Fondos costeros, arenosos y arrecifes.', source: 'https://www.fishbase.org/summary/Ginglymostoma-cirratum.html' },
@@ -78,6 +79,7 @@ function CatalogCard({ guide, editable, editor, setEditor, setNotice }: { guide:
 }
 
 function SpeciesEditor({ guide, onSaved, onCancel }: { guide: SpeciesGuide | null; onSaved: () => void; onCancel: () => void }) {
+  useUpdateGuard(true)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const sending = useRef(false)

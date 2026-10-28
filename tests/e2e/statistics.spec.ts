@@ -8,7 +8,7 @@ async function expectChartValue(summary: Locator, title: string, label: string) 
   await expect(figure.getByRole('rowheader', { name: label, exact: true })).toBeVisible()
 }
 
-for (const [role, route, expectedTotal] of [['student', '/estudiante', 3], ['researcher', '/cientifico', 3], ['community', '/comunidad', 7], ['admin', '/admin', 10]] as const) {
+for (const [role, route, expectedTotal] of [['community', '/comunidad', 7], ['admin', '/admin', 10]] as const) {
   test(`${role}: indicadores, procedencia, fechas parciales y alcance del resumen`, async ({ page, backend }) => {
     backend.importBatches = [
       { id: 'active', file_name: 'obis.csv', row_count: 2, duplicate_count: 1, status: 'pending', created_at: '2026-10-16T00:00:00Z', quality_summary: {} },
@@ -33,12 +33,12 @@ for (const [role, route, expectedTotal] of [['student', '/estudiante', 3], ['res
       await expect(summary.locator('.statistics-metric').first().locator('dd strong')).toHaveText('10')
     }
     await summary.getByLabel('Fuente de las estadísticas').selectOption('obis')
-    await expect(summary.locator('.statistics-metric').first().locator('dd strong')).toHaveText(role === 'student' || role === 'researcher' ? '1' : '2')
+    await expect(summary.locator('.statistics-metric').first().locator('dd strong')).toHaveText('2')
     await expectChartValue(summary, 'Registros por año', '2021')
-    if (role === 'researcher' || role === 'admin') {
+    if (role === 'admin') {
       await expect(summary.getByRole('heading', { name: 'Calidad de los datos' })).toBeVisible()
       await summary.getByLabel('Excluir posibles duplicados de este resumen', { exact: false }).check()
-      await expect(summary.locator('.statistics-metric').first().locator('dd strong')).toHaveText(role === 'researcher' ? '0' : '1')
+      await expect(summary.locator('.statistics-metric').first().locator('dd strong')).toHaveText('1')
     } else await expect(summary.getByRole('heading', { name: 'Cómo leer estos datos' })).toBeVisible()
     if (role === 'admin') await expect(summary.getByRole('link', { name: 'Gestionar lotes OBIS' })).toHaveAttribute('href', '/gestion#importaciones')
     else await expect(summary.getByRole('heading', { name: 'Lotes de importación' })).toHaveCount(0)

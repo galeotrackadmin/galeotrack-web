@@ -3,10 +3,11 @@
 import { useId, type CSSProperties, type ReactNode } from 'react'
 import dynamic from 'next/dynamic'
 import { statisticsPercent, type StatisticsChartPoint } from '@/lib/sightings/statistics-chart'
+import { ChartSkeleton } from '@/components/ui/loading-state'
 
 const EChart = dynamic(() => import('./statistics-echart'), {
   ssr: false,
-  loading: () => <p className="statistics-chart-loading">Preparando gráfica… Los valores están disponibles en la tabla de datos.</p>,
+  loading: () => <ChartSkeleton label="Preparando gráfica… Los valores están disponibles en la tabla de datos." />,
 })
 
 export function StatisticsChart({ title, description, points, chronological = false, type = 'bar', percentageTotal, children }: {

@@ -18,6 +18,7 @@ import { LocationPicker } from './location-picker'
 import { canReport, getProfile, homeForRole } from '@/lib/access'
 import { metersToFeet } from '@/lib/sightings/schema'
 import type { Observation } from '@/lib/types'
+import { useUpdateGuard } from '@/lib/pwa/use-update-guard'
 
 export function ReportForm() {
   const router = useRouter()
@@ -31,10 +32,11 @@ export function ReportForm() {
   const [editReady, setEditReady] = useState(false)
   const sending = useRef(false)
   const submissionId = useRef<string | null>(null)
-  const { register, handleSubmit, reset, control, setValue, trigger, formState: { errors, isSubmitting } } = useForm<SightingFormInput, unknown, SightingFormData>({
+  const { register, handleSubmit, reset, control, setValue, trigger, formState: { errors, isSubmitting, isDirty } } = useForm<SightingFormInput, unknown, SightingFormData>({
     resolver: zodResolver(sightingSchema), defaultValues: REPORT_DEFAULTS, mode: 'onBlur', reValidateMode: 'onChange',
   })
   const [species, behavior, health = [], consent, quantity] = useWatch({ control, name: ['species', 'behavior', 'health_conditions', 'contact_consent', 'quantity'] })
+  useUpdateGuard(isDirty || isSubmitting || loadingEdit || Boolean(files.photo || files.video))
 
   useEffect(() => {
     let active = true

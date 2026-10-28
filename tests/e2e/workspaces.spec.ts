@@ -19,7 +19,7 @@ for (const width of [360, 375, 390, 412, 430, 768, 1024, 1366, 1440, 1920]) {
         const map = page.getByRole('region', { name: 'Mapa de avistamientos', exact: true })
         await expect(map.locator('.sightings-map')).toBeVisible()
         expect(await map.locator('.sightings-map-frame').evaluate((element) => element.getBoundingClientRect().height)).toBe(width < 768 ? 320 : width < 1200 ? 400 : 480)
-        if (route === '/admin') expect(await page.locator('.workspace-list').evaluate((list) => Boolean(list.compareDocumentPosition(document.querySelector('.admin-map')!) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true)
+        expect(await map.evaluate((element) => Boolean(element.compareDocumentPosition(document.querySelector('.workspace-list')!) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true)
       }
       const accessibility = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).exclude('nextjs-portal').analyze()
       expect(accessibility.violations).toEqual([])

@@ -60,7 +60,7 @@ function MarkerGroup({ group }: { group: ReturnType<typeof groupMapSightings>[nu
   const multiple = group.sightings.length > 1
   const label = multiple ? `${group.sightings.length} avistamientos en esta zona` : `Avistamiento: ${selected.species ?? 'No identificado'}`
   const icon = useMemo(() => multiple
-    ? L.divIcon({ className: 'sightings-marker sightings-marker--group', html: `<span>${group.sightings.length}</span>`, iconSize: [26, 26], iconAnchor: [13, 13] })
+    ? L.divIcon({ className: 'sightings-marker sightings-marker--group', html: `<span>${group.sightings.length}</span>`, iconSize: [44, 44], iconAnchor: [22, 22] })
     : sharkMarkerIcon(`sightings-marker sightings-marker--${selected.status}`), [multiple, group.sightings.length, selected.status])
   return <Marker position={[group.latitude, group.longitude]} icon={icon} title={label} alt={label} autoPanOnFocus={false} eventHandlers={{
     add: (event) => event.target.getElement()?.setAttribute('aria-label', label),

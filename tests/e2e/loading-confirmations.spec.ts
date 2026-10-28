@@ -1,0 +1,115 @@
+import AxeBuilder from '@axe-core/playwright'
+import { test, expect, login } from './fixtures'
+
+for (const width of [320, 375, 430, 768, 1024]) {
+  test(`portada: acceso visible sin abrir menú a ${width}px`, async ({ page }, testInfo) => {
+    await page.setViewportSize({ width, height: 740 })
+    await page.goto('/')
+    const access = page.getByRole('navigation', { name: 'Acceso a tu cuenta', exact: true })
+    const signIn = access.getByRole('link', { name: 'Iniciar sesión', exact: true })
+    await expect(signIn).toBeInViewport()
+    await expect(access.getByRole('link', { name: 'Crear cuenta', exact: true })).toBeInViewport()
+    await expect(page.getByRole('button', { name: 'Abrir menú', exact: true })).toHaveAttribute('aria-expanded', 'false')
+    if (width === 320) await page.screenshot({ path: testInfo.outputPath('acceso-movil.png'), animations: 'disabled' })
+    await signIn.click()
+    await expect(page).toHaveURL(/\/login$/)
+    await login(page)
+    await page.goto('/')
+    await expect(access.getByRole('link', { name: 'Mi espacio', exact: true })).toBeInViewport()
+    await expect(access.getByRole('link', { name: 'Iniciar sesión', exact: true })).toHaveCount(0)
+  })
+}
+
+for (const width of [320, 1440]) {
+  test(`confirmación accesible: cancelar, Escape, foco y eliminar a ${width}px`, async ({ page, backend }, testInfo) => {
+    await page.setViewportSize({ width, height: 900 })
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await login(page)
+    const trigger = page.getByRole('button', { name: 'Eliminar avistamiento de Tiburón nodriza', exact: true })
+    const popup = page.getByRole('alertdialog')
+    await trigger.click()
+    await expect(popup).toHaveAccessibleName('¿Eliminar este avistamiento?')
+    await expect(popup).toHaveAccessibleDescription(/Tiburón nodriza.*Se ocultará del listado/)
+    const cancel = popup.getByRole('button', { name: 'Cancelar', exact: true })
+    const remove = popup.getByRole('button', { name: 'Eliminar avistamiento', exact: true })
+    await expect(cancel).toBeFocused()
+    await page.keyboard.press('Shift+Tab')
+    await expect(remove).toBeFocused()
+    await page.keyboard.press('Tab')
+    await expect(cancel).toBeFocused()
+    await page.mouse.click(2, 2)
+    await expect(popup).toBeVisible()
+    expect(backend.rows[0].deleted_at).toBeFalsy()
+    const axe = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).exclude('nextjs-portal').analyze()
+    expect(axe.violations).toEqual([])
+    await page.screenshot({ path: testInfo.outputPath(`confirmacion-${width}.png`), animations: 'disabled' })
+    await page.keyboard.press('Escape')
+    await expect(popup).toBeHidden()
+    await expect(trigger).toBeFocused()
+    await trigger.click()
+    await cancel.click()
+    await expect(popup).toBeHidden()
+    expect(backend.rows[0].deleted_at).toBeFalsy()
+    await trigger.click()
+    await remove.click()
+    await expect(trigger).toHaveCount(0)
+    expect(backend.rows[0].deleted_at).toBeTruthy()
+  })
+}
+
+test('skeleton estadístico y refresco sin borrar datos ni mezclar filtros', async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await login(page)
+  let release: (() => void) | undefined
+  let gate: Promise<void> | null = new Promise<void>((resolve) => { release = resolve })
+  await page.route('**/rest/v1/rpc/sighting_statistics', async (route) => { if (gate) await gate; await route.fallback() })
+  try {
+    await page.goto('/admin')
+    const stats = page.getByRole('region', { name: 'Resumen estadístico', exact: true })
+    const refresh = stats.getByRole('button', { name: 'Actualizar estadísticas', exact: true })
+    await expect(stats.locator('.statistics-value-skeleton')).toHaveCount(4)
+    await expect(stats.locator('.statistics-charts .skeleton-chart')).toHaveCount(4)
+    await expect(refresh).toBeDisabled()
+    await stats.screenshot({ path: testInfo.outputPath('skeleton-movil.png'), animations: 'disabled' })
+    release!(); gate = null
+    const total = stats.locator('.statistics-metric').first().locator('dd strong')
+    await expect(total).toHaveText('12')
+    const figures = stats.getByRole('figure')
+    await expect(figures).toHaveCount(3)
+    gate = new Promise<void>((resolve) => { release = resolve })
+    await refresh.click()
+    await expect(refresh).toBeDisabled()
+    await expect(total).toHaveText('12')
+    await expect(figures).toHaveCount(3)
+    await expect(refresh.locator('svg')).toHaveClass(/refresh-icon--busy/)
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await expect(refresh.locator('svg')).toHaveCSS('animation-name', 'none')
+    release!(); gate = null
+    await expect(refresh).toBeEnabled()
+    gate = new Promise<void>((resolve) => { release = resolve })
+    await stats.getByLabel('Fuente de las estadísticas').selectOption('obis')
+    await expect(stats.locator('.statistics-value-skeleton')).toHaveCount(4)
+    await expect(stats.getByRole('figure')).toHaveCount(0)
+    release!(); gate = null
+    await expect(total).toHaveText('0')
+  } finally { release?.() }
+})
+
+test('cuenta: confirmación final conserva ELIMINAR y no ejecuta al cancelar', async ({ page, backend }) => {
+  await login(page)
+  backend.profileRole = 'community'
+  await page.goto('/cuenta')
+  const remove = page.getByRole('button', { name: 'Eliminar mi cuenta', exact: true })
+  await expect(remove).toBeDisabled()
+  await page.getByLabel('Escribe ELIMINAR para confirmar', { exact: false }).fill('ELIMINAR')
+  let deletions = 0
+  page.on('request', (request) => { if (request.url().includes('/functions/v1/delete-account')) deletions++ })
+  await remove.click()
+  await expect(page.getByRole('alertdialog')).toHaveAccessibleName('¿Eliminar tu cuenta definitivamente?')
+  await page.getByRole('alertdialog').getByRole('button', { name: 'Cancelar', exact: true }).click()
+  expect(deletions).toBe(0)
+  await expect(page.locator('#delete-confirmation')).toHaveValue('ELIMINAR')
+  await page.getByRole('button', { name: 'Cerrar sesión en todos los dispositivos', exact: true }).click()
+  await page.getByRole('alertdialog').getByRole('button', { name: 'Cerrar todas las sesiones', exact: true }).click()
+  await expect(page).toHaveURL(/\/login$/)
+})

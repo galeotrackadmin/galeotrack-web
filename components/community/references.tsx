@@ -1,4 +1,4 @@
-const references = [
+const references: { citation: string; doi?: string; url?: string }[] = [
   { citation: 'Credille, K. M., Frazier, K. S., Hullinger, G. A., & Hines, M. E. (1993). Meningoencephalitis in a nurse shark (Ginglymostoma cirratum) caused by a nematode. Journal of Wildlife Diseases, 29(1), 165–168.' },
   { citation: 'Espinoza, M., Lino, P. G., & García, V. (2018). Guía de campo para la identificación de tiburones en aguas territoriales de Puerto Rico. Editorial Marina.' },
   { citation: 'Hernández-Delgado, E. A. (2015). Uso de Sistemas de Información Geográfica (SIG) para el manejo de áreas marinas protegidas en Puerto Rico. Universidad de Puerto Rico.' },
@@ -13,6 +13,8 @@ const references = [
   { citation: 'Shipley, O. N., Lee, C.-S., Fisher, N. S., Sternlicht, J. K., Kattan, S., Staaterman, E. R., Hammerschlag, N., & Gallagher, A. J. (2021). Metal concentrations in coastal sharks from The Bahamas with a focus on the Caribbean reef shark. Scientific Reports, 11(218), 1–11.', doi: 'https://doi.org/10.1038/s41598-020-79973-w' },
   { citation: 'Smith, M., et al. (Eds.). (2017). Elasmobranch Husbandry Manual II: Recent Advances in the Care of Sharks, Rays and their Relatives. Ohio Biological Survey.' },
   { citation: 'Ward-Paige, C. A., Mora, C., Lotze, H. K., Pattengill-Semmens, C., McClenachan, L., Arias-Castro, E., & Myers, R. A. (2010). Large-scale absence of sharks on reefs in the greater-Caribbean: A footprint of human pressures. PLoS ONE, 5(8), e11916.', doi: 'https://doi.org/10.1371/journal.pone.0011916' },
+  { citation: 'OBIS Mapper. (n.d.).', url: 'https://mapper.obis.org/?taxonid=10193&areaid=276#' },
+  { citation: 'Carrier, J. C., Simpfendorfer, C. A., Heithaus, M. R., & Yopak, K. E. (Eds.). (2022). Biology of sharks and their relatives.' },
 ]
 
 export function References() {
@@ -20,9 +22,10 @@ export function References() {
     <h2 id="references-title" className="text-2xl font-semibold text-ocean">Referencias</h2>
     <div className="ui-card min-w-0 p-6 sm:p-8">
       <ul className="max-w-[80ch] space-y-6 text-base leading-relaxed text-muted" role="list">
-        {references.map(({ citation, doi }) => <li key={citation} className="min-w-0">
+        {references.map(({ citation, doi, url }) => <li key={citation} className="min-w-0">
           <p>{citation}</p>
           {doi && <a href={doi} className="inline-flex min-h-11 max-w-full items-center break-all text-primary underline underline-offset-4">{doi}</a>}
+          {url && <a href={url} className="inline-flex min-h-11 max-w-full items-center break-all text-primary underline underline-offset-4">{url}</a>}
         </li>)}
       </ul>
     </div>

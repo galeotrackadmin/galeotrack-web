@@ -19,9 +19,6 @@
 .workspace-form { padding: 20px; }
 .workspace-form-actions { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
 .workspace-form-actions .button { width: 100%; }
-.workspace-list .sighting-actions { width: 100%; align-items: stretch; }
-.workspace-list .sighting-review-buttons { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; gap: 12px; }
-.workspace-list .sighting-review-buttons .button { min-width: 0; padding-inline: 12px; }
 .workspace-note { font-size: .875rem; line-height: 1.65; color: var(--muted); }
 .workspace-pagination { display: flex; flex-direction: column; align-items: stretch; gap: 12px; margin-top: 24px; }
 .workspace-pagination > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
@@ -40,7 +37,6 @@
 .workspace-page :is(#especies, #publicaciones) .article-body { font-size: 1rem; line-height: 1.65; }
 .workspace-page #publicaciones article { padding: 20px; }
 .sightings-map-frame { height: 320px; }
-.workspace-page .sighting-location, .workspace-page .sighting-summary { font-size: 1rem; line-height: 1.65; }
 .workspace-page .editorial-banner--compact .editorial-banner-media { min-height: 120px; }
 .workspace-page .editorial-banner--compact .editorial-banner-copy { padding: 20px; }
 .workspace-page .editorial-banner--compact h3 { font-size: 1.25rem; }
@@ -53,6 +49,7 @@
 .sighting-stat-caption { display: block; max-width: 20ch; color: var(--muted); font-size: .75rem; }
 .admin-section { margin-top: 32px; }
 .admin-map { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); }
+.admin-map--top { margin-block: 0 32px; padding-top: 0; border-top: 0; }
 .workspace-pagination.admin-pagination > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .admin-pagination > div > p { grid-column: 1 / -1; grid-row: 1; text-align: center; font-size: .875rem; }
 @media (pointer: coarse) { .workspace-page .page-hero--compact .page-hero-actions .button { min-height: 48px; } }
@@ -82,7 +79,5 @@
   .workspace-section-head > .button { width: auto; }
   .workspace-controls { display: flex; flex-wrap: wrap; }
   .workspace-controls .button { width: auto; }
-  .workspace-list .sighting-actions { width: auto; align-items: flex-end; }
-  .workspace-list .sighting-review-buttons { display: flex; flex-wrap: wrap; }
   .workspace-sections { gap: 48px; }
 }

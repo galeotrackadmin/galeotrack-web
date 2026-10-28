@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#020d1c">
+  <meta name="color-scheme" content="dark">
+  <meta name="robots" content="noindex">
+  <title>Sin conexión | GaleoTrack</title>
+  <link rel="icon" href="/pwa/icon-192.png">
+  <link rel="stylesheet" href="/pwa/offline.css">
+  <script src="/pwa/offline.js" defer></script>
+</head>
+<body>
+  <main>
+    <img src="/pwa/icon-192.png" width="80" height="80" alt="GaleoTrack">
+    <h1>No pudimos conectar con GaleoTrack.</h1>
+    <p>Comprueba tu conexión a Internet y vuelve a intentarlo.</p>
+    <p>Los mapas, el acceso a tu cuenta y el envío de avistamientos necesitan conexión. Esta pantalla no guarda reportes ni datos privados.</p>
+    <div class="actions"><button type="button" id="retry">Reintentar</button><a href="/">Volver al inicio</a></div>
+    <p id="connection" role="status" aria-live="polite"></p>
+    <noscript><p>Cuando vuelva la conexión, recarga esta página para continuar.</p></noscript>
+  </main>
+</body>
+</html>

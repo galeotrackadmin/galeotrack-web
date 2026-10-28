@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Alert } from '@/components/ui/alert'
 import { Textarea } from '@/components/ui/form-field'
 import { ResourceState, Pagination } from './resource-state'
+import { useUpdateGuard } from '@/lib/pwa/use-update-guard'
 
 type Request = { id: string; full_name: string | null; affiliation: string | null }
 
@@ -16,6 +17,7 @@ export function ScientistRequests() {
   const [notes, setNotes] = useState<Record<string, string>>({})
   const [notice, setNotice] = useState<{ kind: 'success' | 'error'; message: string } | null>(null)
   const inFlight = useRef(false)
+  useUpdateGuard(Boolean(busy || Object.values(notes).some(Boolean)))
   const load = useCallback(async () => {
     const { data, error, count } = await supabase.from('profiles').select('id, full_name, affiliation', { count: 'exact' }).eq('role', 'pending_scientist').eq('science_status', 'pending').order('id').range((page - 1) * 6, page * 6 - 1).returns<Request[]>()
     if (error) throw new Error('No se pudieron cargar las solicitudes científicas.')
@@ -28,6 +30,7 @@ export function ScientistRequests() {
     try {
       const { error } = await supabase.rpc('review_scientist', { profile_id: id, approve, note: notes[id] ?? '' })
       if (error) throw new Error('No se pudo revisar la solicitud. Puede que otro administrador ya la haya atendido.')
+      setNotes((current) => { const next = { ...current }; delete next[id]; return next })
       setNotice({ kind: 'success', message: approve ? 'Cuenta científica habilitada.' : 'Solicitud rechazada. El usuario podrá consultar el resultado.' })
       if (resource.data?.rows.length === 1 && page > 1) setPage(page - 1)
       resource.refresh()

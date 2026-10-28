@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/button'
 import { FormField, Input, Select } from '@/components/ui/form-field'
 import { ROLE_LABELS, homeForRole, type UserRole } from '@/lib/access'
 import { supabase } from '@/lib/supabase-client'
+import { useConfirmation } from '@/components/ui/confirmation-provider'
+import { useUpdateGuard } from '@/lib/pwa/use-update-guard'
 
 type RoleHistory = { id: string; previous_role: string; requested_role: string; status: string; review_note: string | null; created_at: string; reviewed_at: string | null }
 const roleChoices = [
@@ -21,6 +23,7 @@ const roleChoices = [
 function displayRole(role: string) { return ROLE_LABELS[role as UserRole] ?? role }
 
 export function AccountSettings() {
+  const confirm = useConfirmation()
   const profile = useProfile()
   const refreshProfile = useRefreshProfile()
   const router = useRouter()
@@ -36,6 +39,8 @@ export function AccountSettings() {
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [deleteConfirmation, setDeleteConfirmation] = useState('')
+  const initialRole = profile.role === 'community' ? 'community' : profile.role === 'researcher' || profile.role === 'pending_scientist' ? 'researcher' : 'student'
+  useUpdateGuard(Boolean(busy || name !== profile.fullName || organization || selectedRole !== initialRole || currentPassword || newPassword || confirmPassword || deleteConfirmation))
 
   const loadAccountData = useCallback(async () => {
     const [historyResult, authResult] = await Promise.all([
@@ -71,7 +76,7 @@ export function AccountSettings() {
       ? `\n\n${draftCount === null ? 'Tus borradores se conservarán.' : `Tienes ${draftCount} borrador${draftCount === 1 ? '' : 'es'}; se conservarán.`} No podrás editarlos hasta recuperar el acceso científico.`
       : ''
     const reviewWarning = selectedRole === 'researcher' ? '\n\nUn administrador debe aprobar el acceso científico antes de habilitarlo.' : ''
-    if (!window.confirm(`¿Cambiar tu perfil a ${roleChoices.find((role) => role.value === selectedRole)?.label}?${draftWarning}${reviewWarning}`)) return
+    if (busy || !await confirm({ title: '¿Cambiar tu perfil de participación?', description: `Nuevo perfil: ${roleChoices.find((role) => role.value === selectedRole)?.label}. Tus reportes existentes se conservarán.${draftWarning}${reviewWarning}`, action: 'Cambiar perfil' })) return
     setBusy('role')
     const { error } = await supabase.rpc('change_my_role', { selected_role: selectedRole, organization: organization.trim() })
     if (error) setNotice({ kind: 'error', message: error.message.includes('pendiente') ? 'Ya tienes una solicitud científica pendiente.' : 'No se pudo cambiar el perfil. Inténtalo de nuevo.' })
@@ -100,7 +105,7 @@ export function AccountSettings() {
   }
 
   async function signOutEverywhere() {
-    if (!window.confirm('Se cerrará tu sesión en este y en los demás dispositivos. ¿Continuar?')) return
+    if (busy || !await confirm({ title: '¿Cerrar todas las sesiones?', description: 'Se cerrará tu sesión en este y en los demás dispositivos. Tendrás que volver a iniciar sesión para acceder a tu espacio.', action: 'Cerrar todas las sesiones' })) return
     setBusy('sessions')
     const { error } = await supabase.auth.signOut({ scope: 'global' })
     if (error) { setNotice({ kind: 'error', message: 'No se pudieron cerrar todas las sesiones.' }); setBusy(''); return }
@@ -137,6 +142,7 @@ export function AccountSettings() {
   async function deleteAccount(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setNotice(null)
     if (deleteConfirmation !== 'ELIMINAR') { setNotice({ kind: 'error', message: 'Escribe ELIMINAR exactamente para confirmar.' }); return }
+    if (busy || !await confirm({ title: '¿Eliminar tu cuenta definitivamente?', description: 'Se eliminarán tu perfil, contactos consentidos, borradores y evidencia. Los avistamientos se conservarán sin atribución y las publicaciones publicadas quedarán sin autor. Esta acción no se puede deshacer.', action: 'Eliminar mi cuenta', danger: true })) return
     setBusy('delete')
     const { data, error } = await supabase.functions.invoke('delete-account', { body: { confirmation: deleteConfirmation } })
     if (error || data?.error) {

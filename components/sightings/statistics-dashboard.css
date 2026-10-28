@@ -11,8 +11,10 @@
 .statistics-checkbox input { flex: 0 0 auto; width: 20px; height: 20px; accent-color: var(--primary); }
 .statistics-method, .statistics-result { color: var(--muted); font-size: .875rem; line-height: 1.65; }
 .statistics-loading { min-height: 24px; color: var(--muted); }
-.statistics-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.statistics-metric { min-width: 0; padding: 20px; }
+.statistics-refresh { min-width: min(100%, 14rem); }
+.statistics-metric dd > .statistics-value-skeleton { width: 4.5rem; height: 2.4rem; margin-top: 0; }
+.statistics-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr)); gap: 12px; }
+.statistics-metric { min-width: 0; padding: 16px; }
 .statistics-metric dt { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--muted); font-size: .875rem; font-weight: 500; overflow-wrap: anywhere; }
 .statistics-metric dt svg { flex-shrink: 0; color: var(--primary); }
 .statistics-metric dd { margin-top: 12px; }
@@ -23,6 +25,7 @@
 .statistics-chart h4, .statistics-quality h4, .statistics-batches h4 { font-size: 1.125rem; font-weight: 650; line-height: 1.4; }
 .statistics-chart figcaption > p, .statistics-quality > p, .statistics-batches p { margin-top: 8px; color: var(--muted); font-size: .875rem; line-height: 1.65; }
 .statistics-chart-visual { min-width: 0; height: min(var(--statistics-chart-height), 25rem); margin-top: 20px; overflow-x: hidden; overflow-y: auto; scrollbar-gutter: stable; }
+.statistics-chart-visual > .skeleton-chart { height: 100%; padding-top: 0; overflow: hidden; }
 .statistics-echart { width: 100%; min-width: 0; height: var(--statistics-chart-height); }
 .statistics-chart-loading { padding: 24px 0; color: var(--muted); font-size: .875rem; line-height: 1.65; }
 .statistics-table { margin-top: 20px; border-top: 1px solid var(--border); }

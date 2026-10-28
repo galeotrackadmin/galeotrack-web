@@ -18,6 +18,7 @@ export function AccountMenu() {
   const router = useRouter()
   const container = useRef<HTMLDivElement>(null)
   const trigger = useRef<HTMLButtonElement>(null)
+  const panel = useRef<HTMLDivElement>(null)
   const panelId = useId()
   const [busy, setBusy] = useState(false)
   const [open, setOpen] = useState(false)
@@ -25,7 +26,7 @@ export function AccountMenu() {
   const name = profile.fullName.trim() || 'Completa tu perfil'
 
   useEffect(() => {
-    const close = (event: PointerEvent) => { if (event.target instanceof Node && !container.current?.contains(event.target)) setOpen(false) }
+    const close = (event: PointerEvent | FocusEvent) => { if (event.target instanceof Node && !container.current?.contains(event.target)) setOpen(false) }
     const escape = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && open) {
         setOpen(false)
@@ -33,8 +34,29 @@ export function AccountMenu() {
       }
     }
     document.addEventListener('pointerdown', close)
+    document.addEventListener('focusin', close)
     document.addEventListener('keydown', escape)
-    return () => { document.removeEventListener('pointerdown', close); document.removeEventListener('keydown', escape) }
+    return () => { document.removeEventListener('pointerdown', close); document.removeEventListener('focusin', close); document.removeEventListener('keydown', escape) }
+  }, [open])
+
+  useEffect(() => {
+    if (!open) return
+    const fit = () => {
+      const element = panel.current
+      if (!element) return
+      const viewport = window.visualViewport
+      const bottom = viewport ? viewport.offsetTop + viewport.height : window.innerHeight
+      element.style.setProperty('--account-menu-max-height', `${Math.max(48, bottom - element.getBoundingClientRect().top - 16)}px`)
+    }
+    fit()
+    window.addEventListener('resize', fit)
+    window.visualViewport?.addEventListener('resize', fit)
+    window.visualViewport?.addEventListener('scroll', fit)
+    return () => {
+      window.removeEventListener('resize', fit)
+      window.visualViewport?.removeEventListener('resize', fit)
+      window.visualViewport?.removeEventListener('scroll', fit)
+    }
   }, [open])
 
   async function logout() {
@@ -49,7 +71,7 @@ export function AccountMenu() {
       <span className="account-avatar" aria-hidden="true">{initials(profile.fullName, profile.email)}</span>
     </button>
     <span className="account-role">{ROLE_LABELS[profile.role]}</span>
-    <div id={panelId} className="account-menu-panel" hidden={!open}>
+    <div ref={panel} id={panelId} className="account-menu-panel" hidden={!open}>
       <div className="account-menu-identity">
         <strong>{profile.fullName || 'Nombre pendiente'}</strong>
         <span>{profile.email}</span>

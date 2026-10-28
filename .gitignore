@@ -13,11 +13,13 @@
 # testing
 /coverage
 /test-results/
+/test-results-pwa/
 /playwright-report/
 
 # next.js
 /.next/
 /out/
+/public/sw.js
 
 # production
 /build
@@ -25,6 +27,15 @@
 # misc
 .DS_Store
 *.pem
+
+# local root documentation (keep shared project guidance)
+/*.md
+!/README.md
+!/AGENTS.md
+!/CLAUDE.md
+
+# local source workbook (the app uses generated JSON)
+/Occurrence (1).xlsx
 
 # debug
 npm-debug.log*

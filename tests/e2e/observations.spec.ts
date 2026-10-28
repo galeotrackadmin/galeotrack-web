@@ -68,7 +68,10 @@ for (const [role, route] of [['student', '/estudiante'], ['researcher', '/cienti
     await page.getByRole('button', { name: 'Iniciar sesión', exact: true }).click()
     await expect(page).toHaveURL(new RegExp(`${route}$`))
     const map = page.getByRole('region', { name: 'Mapa de avistamientos', exact: true })
-    await expect(map.getByText(/2 avistamientos con coordenadas/)).toBeVisible()
+    if (role === 'student') {
+      await expect(map.getByRole('button', { name: /^Avistamiento:/ })).toHaveCount(2)
+      await expect(map.getByText(/2 avistamientos con coordenadas/)).toHaveCount(0)
+    } else await expect(map.getByText(/2 avistamientos con coordenadas/)).toBeVisible()
     const point = map.getByRole('button', { name: 'Avistamiento: Tiburón limón del mapa', exact: true })
     await point.hover()
     await expect(map.locator('.sighting-popup')).toContainText('14:30 (PR)')

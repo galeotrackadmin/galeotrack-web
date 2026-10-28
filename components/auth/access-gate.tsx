@@ -8,6 +8,7 @@ import { supabase } from '@/lib/supabase-client'
 import { Alert } from '@/components/ui/alert'
 import { Button, buttonStyles } from '@/components/ui/button'
 import { PageHeading } from '@/components/layout/page-heading'
+import { WorkspaceSkeleton } from '@/components/ui/loading-state'
 
 const ProfileContext = createContext<{ profile: Profile; refresh: () => Promise<void> } | null>(null)
 export function useProfile() {
@@ -55,11 +56,13 @@ export function AccessGate({ children }: { children: ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_OUT') { setProfile(null); router.replace('/login') }
     })
-    window.addEventListener('focus', load)
-    return () => { active = false; subscription.unsubscribe(); window.removeEventListener('focus', load) }
+    // Returning to an installed app while offline must not unmount an in-memory report.
+    const refreshOnFocus = () => { if (navigator.onLine) void load() }
+    window.addEventListener('focus', refreshOnFocus)
+    return () => { active = false; subscription.unsubscribe(); window.removeEventListener('focus', refreshOnFocus) }
   }, [router, attempt])
   if (error) return <div className="page-container py-12"><Alert kind="error">{error}</Alert><Button className="mt-4" onClick={() => { setError(''); setAttempt(attempt + 1) }}>Reintentar</Button></div>
-  if (!profile) return <p role="status" className="page-container py-16">Comprobando tu acceso…</p>
+  if (!profile) return <WorkspaceSkeleton />
   return <ProfileContext value={{ profile, refresh }}>{children}</ProfileContext>
 }
 

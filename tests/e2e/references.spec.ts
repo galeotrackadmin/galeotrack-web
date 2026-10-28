@@ -11,19 +11,22 @@ const dois = [
 
 for (const mode of [{ route: '/estudiante', role: 'student' }, { route: '/cientifico', role: 'researcher' }]) {
   for (const width of [375, 1440]) {
-    test(`referencias: ${mode.role} muestra las 14 citas al final a ${width}px`, async ({ page, backend }) => {
+    test(`referencias: ${mode.role} reúne las 16 citas al final a ${width}px`, async ({ page, backend }) => {
       await page.setViewportSize({ width, height: 900 })
       await login(page)
       backend.profileRole = mode.role
       await page.goto(mode.route)
       const references = page.getByRole('region', { name: 'Referencias', exact: true })
       await expect(references.getByRole('heading', { name: 'Referencias', level: 2 })).toBeVisible()
-      await expect(references.getByRole('listitem')).toHaveCount(14)
+      await expect(references.getByRole('listitem')).toHaveCount(16)
       await expect(references.getByRole('listitem').first()).toContainText('Credille, K. M.')
-      await expect(references.getByRole('listitem').last()).toContainText('A footprint of human pressures.')
+      await expect(references.getByRole('listitem').nth(13)).toContainText('A footprint of human pressures.')
+      await expect(references.getByRole('listitem').last()).toContainText('Carrier, J. C.')
+      await expect(references.getByText('OBIS Mapper. (n.d.).', { exact: true })).toBeVisible()
       await expect(references.getByText('A baseline for fish and future conservation.', { exact: false })).toBeVisible()
       await expect(page.locator('.workspace-sections > section:last-child')).toHaveAttribute('id', 'referencias')
-      await expect(references.getByRole('link')).toHaveCount(dois.length)
+      await expect(references.getByRole('link')).toHaveCount(dois.length + 1)
+      await expect(references.getByRole('link', { name: 'https://mapper.obis.org/?taxonid=10193&areaid=276#', exact: true })).toHaveAttribute('href', 'https://mapper.obis.org/?taxonid=10193&areaid=276#')
       for (const doi of dois) await expect(references.getByRole('link', { name: doi, exact: true })).toHaveAttribute('href', doi)
       await references.scrollIntoViewIfNeeded()
       await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)

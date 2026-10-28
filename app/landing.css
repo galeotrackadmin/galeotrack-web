@@ -11,16 +11,29 @@
 }
 .landing-page :is(a, button, [tabindex]):focus-visible { outline-color: var(--cyan); }
 .landing-page .page-container { max-width: 1320px; }
+.landing-mobile-access { display: flex; flex-wrap: wrap; align-items: center; justify-content: end; gap: 8px; padding-block: 0 12px; }
+.landing-mobile-access .button { min-height: 44px; padding: 10px 16px; }
+.landing-session-pending { display: flex; align-items: center; min-height: 44px; }
+@media (min-width: 1200px) { .landing-mobile-access { display: none; } }
 .landing-button { min-height: 48px; max-width: 100%; border-radius: 999px; padding: 12px 24px; font-size: 1rem; letter-spacing: .02em; overflow-wrap: anywhere; }
 .landing-button--solid { color: var(--ocean-deep); background: var(--foreground); border-color: var(--foreground); }
-.landing-button--solid:hover { background: var(--cyan); border-color: var(--cyan); }
 .landing-button--outline { color: var(--foreground); background: transparent; border-color: var(--landing-muted); }
-.landing-button--outline:hover { color: var(--ocean-deep); background: var(--foreground); border-color: var(--foreground); }
+.landing-button--outline:active { color: var(--ocean-deep); background: var(--foreground); border-color: var(--foreground); }
+.landing-collaborate { position: relative; isolation: isolate; overflow: hidden; }
+.landing-collaborate-fill { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: inherit; border-radius: inherit; pointer-events: none; color: var(--ocean-deep); background: var(--foreground); clip-path: inset(0 100% 0 0); transition: clip-path var(--duration) ease; }
+.landing-collaborate:is(:focus-visible, :active) .landing-collaborate-fill { clip-path: inset(0); transition: none; }
+@media (hover: hover) and (pointer: fine) {
+  .landing-button--solid:hover { background: var(--cyan); border-color: var(--cyan); }
+  .landing-button--outline:hover { color: var(--ocean-deep); background: var(--foreground); border-color: var(--foreground); }
+  .landing-hero-actions .landing-collaborate:hover:not(:active) { color: var(--foreground); background: transparent; }
+  .landing-collaborate:hover .landing-collaborate-fill { clip-path: inset(0); }
+}
 .landing-eyebrow { font-size: .75rem; font-weight: 600; line-height: 1.7; letter-spacing: .16em; color: var(--cyan); }
 .landing-photo { object-fit: cover; filter: saturate(.8); }
 .landing-photo--taxonomy { object-fit: cover; object-position: center; }
 .landing-hero { isolation: isolate; position: relative; overflow: hidden; background: var(--landing-background); }
-.landing-hero-media { position: absolute; z-index: -2; inset: 0; }
+.landing-hero-media { position: absolute; z-index: -2; inset: 0; width: calc(100% - max(16px, env(safe-area-inset-left)) - max(16px, env(safe-area-inset-right))); max-width: 1200px; margin-inline: auto; overflow: hidden; }
+.landing-hero-media::after { position: absolute; inset: 0; content: ''; pointer-events: none; background: linear-gradient(90deg, var(--landing-background), transparent 16%, transparent 84%, var(--landing-background)); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); -webkit-mask-image: linear-gradient(90deg, #000, transparent 12%, transparent 88%, #000); mask-image: linear-gradient(90deg, #000, transparent 12%, transparent 88%, #000); }
 .landing-hero-media .landing-photo { object-position: 62% 50%; }
 .landing-hero::before { position: absolute; z-index: -1; inset: 0; content: ''; background: linear-gradient(90deg, color-mix(in srgb, var(--landing-background) 90%, transparent), color-mix(in srgb, var(--landing-background) 65%, transparent)), linear-gradient(0deg, var(--landing-background), transparent); }
 .landing-hero-content { padding-block: 32px 40px; }
@@ -74,7 +87,10 @@
 .landing-centered-heading { text-align: center; max-width: 65ch; margin: 0 auto 32px; }
 .landing-centered-heading > p:last-child { margin-top: 20px; line-height: 1.8; color: var(--landing-muted); }
 .landing-role-grid { display: grid; grid-template-columns: minmax(0, 1fr); max-width: 560px; margin-inline: auto; gap: 24px; align-items: stretch; }
-.landing-role-card { display: flex; flex-direction: column; min-width: 0; overflow: hidden; border-radius: 18px; background: var(--landing-panel); border: 1px solid var(--landing-line); }
+.landing-role-card { display: flex; flex-direction: column; min-width: 0; overflow: hidden; border-radius: 18px; background: var(--landing-panel); border: 1px solid var(--landing-line); transition: transform var(--duration) ease; }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .landing-role-card:hover { transform: scale(1.02); }
+}
 .landing-role-image { position: relative; aspect-ratio: 16 / 9; isolation: isolate; }
 .landing-role-image::after { position: absolute; z-index: 0; inset: 0; content: ''; background: linear-gradient(0deg, color-mix(in srgb, var(--landing-panel) 95%, transparent), color-mix(in srgb, var(--landing-background) 12%, transparent) 65%); }
 .landing-role-image--scientist img { object-position: 55% 50%; }
@@ -107,12 +123,11 @@
   .landing-invitation-inner { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 32px; padding-block: 48px; }
 }
 @media (min-width: 1024px) {
-  .landing-hero-media { inset-inline-start: 20%; }
   .landing-hero-media .landing-photo { object-position: 57% 45%; }
   .landing-hero::before { background: linear-gradient(90deg, var(--landing-background) 5%, color-mix(in srgb, var(--landing-background) 85%, transparent) 32%, color-mix(in srgb, var(--landing-background) 10%, transparent) 80%), linear-gradient(0deg, var(--landing-background), color-mix(in srgb, var(--landing-background) 5%, transparent) 50%, color-mix(in srgb, var(--landing-background) 40%, transparent)); }
   .landing-hero--tracker .landing-hero-content { grid-template-columns: minmax(0, 1fr) auto; gap: 16px 48px; padding-block: 32px 40px; }
   .landing-hero--tracker .landing-hero-description { grid-column: 1; }
-  .landing-hero--tracker .landing-hero-actions { grid-column: 2; grid-row: 1 / 3; align-self: center; margin: 0; }
+  .landing-hero--tracker .landing-hero-actions { grid-column: 2; grid-row: 1 / 3; align-self: center; margin: 0; transform: translateX(-48px); }
   .landing-section-intro { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 48px; margin-bottom: 48px; }
   .landing-project-intro { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 64px; margin-bottom: 64px; }
   .landing-journey, .landing-role-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: none; gap: 24px; }

@@ -12,7 +12,7 @@ const user = { id: 'f686f330-5f9e-43e4-924a-99872c0f819a', email: 'reviewer@exam
 export const test = base.extend<{ backend: Backend }>({
   backend: [async ({ context }, use) => {
     const backend: Backend = {
-      rows: Array.from({ length: 12 }, (_, i) => ({ id: `sighting-${i + 1}`, reporter_id: user.id, collaborator_role: 'Buzo', species: i === 0 ? 'Tiburón nodriza' : 'Tiburón martillo', location_name: 'Rincón, Puerto Rico', sighting_date: '2026-09-24', sighting_time: '10:30', quantity: 2, estimated_size: i === 0 ? 1.8 : null, total_length_m: null, fork_length_m: null, standard_length_m: null, interdorsal_length_m: null, sex: 'No determinado', species_other: null, behavior: 'Nadando tranquilamente', behavior_other: null, health_conditions: ['Sano / sin marcas visibles'], health_other: null, altitude: null, accuracy: null, photo_path: null, video_path: null, latitude: i === 0 ? 18.34 : null, longitude: i === 0 ? -67.25 : null, notes: null, status: 'pending' })),
+       rows: Array.from({ length: 12 }, (_, i) => ({ id: `sighting-${i + 1}`, reporter_id: user.id, collaborator_role: 'Buzo', species: i === 0 ? 'Tiburón nodriza' : 'Tiburón martillo', location_name: 'Rincón, Puerto Rico', sighting_date: '2026-09-24', sighting_time: '10:30', quantity: 2, estimated_size: i === 0 ? 1.8 : null, total_length_m: null, fork_length_m: null, standard_length_m: null, interdorsal_length_m: null, sex: 'No determinado', species_other: null, behavior: 'Nadando tranquilamente', behavior_other: null, health_conditions: ['Sano / sin marcas visibles'], health_other: null, altitude: null, accuracy: null, photo_path: null, video_path: null, latitude: i === 0 ? 18.34 : null, longitude: i === 0 ? -67.25 : null, notes: null, status: 'pending', updated_at: '2026-09-24T00:00:00.000Z' })),
        reports: [], denyReport: false, delayReport: 0, profileRole: 'admin', profileName: 'María Rivera', roleHistory: [], reviews: 0,
        posts: [], signup: null, recovery: null, scientistPending: true, requestsReviewed: 0, importBatches: [], importPayloads: [], failStatistics: false, statisticsRequests: 0,
     }
@@ -139,11 +139,12 @@ export const test = base.extend<{ backend: Backend }>({
         }
         const status = url.searchParams.get('status')?.replace('eq.', '')
         const id = url.searchParams.get('id')?.replace('eq.', '')
-        const rows = backend.rows.filter((row) => (!status || row.status === status) && (!id || row.id === id) && (url.searchParams.get('deleted_at') !== 'is.null' || !row.deleted_at) && (!url.searchParams.has('latitude') || (row.latitude !== null && row.longitude !== null)))
+        const updatedAt = url.searchParams.get('updated_at')
+        const rows = backend.rows.filter((row) => (!status || row.status === status) && (!id || row.id === id) && (url.searchParams.get('deleted_at') !== 'is.null' || !row.deleted_at) && (!updatedAt || (updatedAt === 'is.null' ? row.updated_at == null : row.updated_at === updatedAt.slice(3))) && (!url.searchParams.has('latitude') || (row.latitude !== null && row.longitude !== null)))
         if (request.method() === 'HEAD') return route.fulfill({ status: 200, headers: { 'content-range': `*/${rows.length}`, 'access-control-expose-headers': 'content-range' } })
         if (request.method() === 'PATCH') {
           const changes = request.postDataJSON()
-          if ('status' in changes) backend.reviews += 1
+          if ('status' in changes) backend.reviews += rows.length
           rows.forEach((row) => Object.assign(row, changes))
           if (request.headers()['accept']?.includes('vnd.pgrst.object')) return rows[0] ? json(rows[0]) : json({ message: 'No rows' }, 406)
           return json(rows.map((row) => ({ id: row.id })))

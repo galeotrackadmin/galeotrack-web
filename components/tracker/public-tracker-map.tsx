@@ -43,7 +43,7 @@ function MapPoint({ group, zoom, active, onSelect }: { group: ReturnType<typeof 
     const showPopup = !multiple || overlapping
     const label = multiple ? `${group.sightings.length} avistamientos; ${overlapping ? 'consultar registros' : 'acercar esta zona'}` : `Ver avistamiento: ${group.sightings[0].species || 'Especie no identificada'}`
     const icon = useMemo(() => multiple
-      ? L.divIcon({ className: `tracker-marker tracker-marker--group${active ? ' tracker-marker--active' : ''}`, html: `<span>${group.sightings.length}</span>`, iconSize: [26, 26], iconAnchor: [13, 13] })
+      ? L.divIcon({ className: `tracker-marker tracker-marker--group${active ? ' tracker-marker--active' : ''}`, html: `<span>${group.sightings.length}</span>`, iconSize: [44, 44], iconAnchor: [22, 22] })
       : sharkMarkerIcon(`tracker-marker${active ? ' tracker-marker--active' : ''}`), [active, multiple, group.sightings.length])
     const activate = (marker?: L.Marker) => {
       if (!showPopup) {

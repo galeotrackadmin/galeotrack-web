@@ -12,6 +12,8 @@ import { Alert } from '@/components/ui/alert'
 import { Icon, type IconName } from '@/components/icons'
 import { StatisticsChart } from './statistics-chart'
 import { VisualHealthChart } from './visual-health-chart'
+import { RefreshCw } from 'lucide-react'
+import { ChartSkeleton } from '@/components/ui/loading-state'
 import './statistics-dashboard.css'
 
 const number = (value: number) => value.toLocaleString('es-PR')
@@ -24,7 +26,7 @@ export function StatisticsDashboard({ mode, revision = '' }: { mode: Mode; revis
     void revision
     return loadSightingStatistics(supabase, filters, signal)
   }, [filters, revision])
-  const resource = useResource(load)
+  const resource = useResource(load, { retainOnRefresh: true })
   const stats = resource.data
   const advanced = mode === 'researcher' || mode === 'admin'
   const ownLabel = filters.ownOnly ? 'Mis reportes' : 'Registros analizados'
@@ -44,7 +46,7 @@ export function StatisticsDashboard({ mode, revision = '' }: { mode: Mode; revis
   function choose<K extends keyof StatisticsFilters>(key: K, value: StatisticsFilters[K]) { setFilters((current) => ({ ...current, [key]: value })) }
 
   return <section id="estadisticas" className="statistics-dashboard" aria-labelledby={`${id}-title`}>
-    <div className="statistics-heading"><div><p className="section-eyebrow">{mode === 'student' ? 'EXPLORA LOS DATOS' : mode === 'community' ? 'TU APORTACIÓN AL PROYECTO' : mode === 'researcher' ? 'ANÁLISIS DE REGISTROS' : 'PANORAMA ADMINISTRATIVO'}</p><h3 id={`${id}-title`}>Resumen estadístico</h3><p>Todos los registros de estos filtros, independientemente de la página del listado. Estos controles no alteran el mapa ni el listado.</p></div><Button variant="secondary" disabled={resource.loading} onClick={resource.refresh}><Icon name="refresh" />Actualizar estadísticas</Button></div>
+    <div className="statistics-heading"><div><p className="section-eyebrow">{mode === 'student' ? 'EXPLORA LOS DATOS' : mode === 'community' ? 'TU APORTACIÓN AL PROYECTO' : mode === 'researcher' ? 'ANÁLISIS DE REGISTROS' : 'PANORAMA ADMINISTRATIVO'}</p><h3 id={`${id}-title`}>Resumen estadístico</h3><p>Todos los registros de estos filtros, independientemente de la página del listado. Estos controles no alteran el mapa ni el listado.</p></div><Button variant="secondary" className="statistics-refresh" aria-label="Actualizar estadísticas" aria-busy={resource.loading} disabled={resource.loading} onClick={resource.refresh}><RefreshCw size={20} strokeWidth={1.75} aria-hidden="true" className={resource.loading ? 'refresh-icon refresh-icon--busy' : 'refresh-icon'} /><span>{resource.loading ? 'Actualizando…' : 'Actualizar estadísticas'}</span></Button></div>
 
     <div className="statistics-controls">
       <div><label htmlFor={`${id}-status`}>Estado de las estadísticas</label><Select id={`${id}-status`} value={filters.status} onChange={(event) => choose('status', event.target.value as StatisticsFilters['status'])}><option value="all">Todos los estados</option><option value="verified">Verificados</option><option value="pending">Pendientes</option><option value="rejected">Rechazados</option></Select></div>
@@ -57,9 +59,10 @@ export function StatisticsDashboard({ mode, revision = '' }: { mode: Mode; revis
     {advanced && <label className="statistics-checkbox"><input type="checkbox" checked={filters.excludeDuplicates} onChange={(event) => choose('excludeDuplicates', event.target.checked)} /><span>Excluir posibles duplicados de este resumen (sin borrar registros)</span></label>}
     <p className="statistics-method">Se cuentan registros, no abundancia de tiburones. {filters.excludeDuplicates ? 'Las filas marcadas como posibles duplicados están excluidas.' : 'Los posibles duplicados se incluyen y se señalan; no se eliminan automáticamente.'} Los géneros, grupos y nombres sin normalizar no se presentan como especies confirmadas.</p>
 
-    {resource.loading && <p role="status" className="statistics-loading">Calculando estadísticas…</p>}
+    <p role="status" className="sr-only">{resource.loading ? stats ? 'Actualizando estadísticas. Se mantienen los últimos datos hasta completar la consulta.' : 'Calculando estadísticas…' : ''}</p>
     {resource.error && <Alert kind="error">{resource.error}<Button variant="secondary" className="mt-3" onClick={resource.refresh}>Reintentar estadísticas</Button></Alert>}
-    <dl className="statistics-metrics" aria-label="Indicadores del resumen">{metrics.map((item) => <div key={item.label} className="ui-card statistics-metric"><dt><Icon name={item.icon} />{item.label}</dt><dd><strong>{item.value === undefined ? '—' : number(item.value)}</strong><span>{item.caption}</span></dd></div>)}</dl>
+    <dl className="statistics-metrics" aria-label="Indicadores del resumen" aria-busy={resource.loading}>{metrics.map((item) => <div key={item.label} className="ui-card statistics-metric"><dt><Icon name={item.icon} />{item.label}</dt><dd>{resource.loading && !stats ? <span className="ui-skeleton statistics-value-skeleton" aria-hidden="true" /> : <strong>{item.value === undefined ? '—' : number(item.value)}</strong>}<span>{item.caption}</span></dd></div>)}</dl>
+    {resource.loading && !stats && <div className="statistics-charts" aria-hidden="true">{Array.from({ length: mode === 'admin' ? 4 : 5 }, (_, item) => <div key={item} className="ui-card statistics-chart"><div className="ui-skeleton h-5 w-2/3" /><div className="ui-skeleton mt-3 h-4 w-full" /><ChartSkeleton /></div>)}</div>}
     {stats && <>
       <p className="statistics-result" role="status">{number(stats.total)} registros analizados · {filters.ownOnly ? 'Solo mis reportes' : 'Registros de las fuentes autorizadas'} · {SOURCE_LABELS[filters.source]}. {number(stats.quality.without_year)} sin año conocido; {number(stats.quality.partial_date)} con fecha parcial.</p>
       <div className="statistics-charts">

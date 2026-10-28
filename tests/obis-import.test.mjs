@@ -115,6 +115,19 @@ test('importación real: autorización, alta atómica, idempotencia y retirada/r
       const imported = (await db.query('select id from sightings where import_batch_id=$1 order by import_row_number limit 2', [batch])).rows
       await db.query('select public.delete_sighting($1)', [imported[0].id])
       await db.query("update sightings set status='verified' where id=$1", [imported[1].id])
+      for (const id of [imported[1].id, communityReport]) {
+        const original = (await db.query('select * from sightings where id=$1', [id])).rows[0]
+        for (const [from, to] of [['verified', 'rejected'], ['rejected', 'verified']]) {
+          const corrected = (await db.query(`update sightings
+            set status=$1, verified_by=$2, verified_at=clock_timestamp(), updated_at=clock_timestamp()
+            where id=$3 and status=$4 and deleted_at is null
+            returning *`, [to, ids.admin, id, from])).rows[0]
+          assert.equal(corrected.status, to, 'admin can correct either direction with real RLS and triggers')
+          assert.equal(corrected.verified_by, ids.admin)
+          const content = (row) => Object.fromEntries(Object.entries(row).filter(([key]) => !['status', 'verified_by', 'verified_at', 'updated_at'].includes(key)))
+          assert.deepEqual(content(corrected), content(original), 'a correction never alters observation or OBIS source data')
+        }
+      }
       assert.equal((await db.query('select public.set_obis_batch_withdrawn($1,true) as n', [batch])).rows[0].n, 114)
       assert.equal((await db.query('select public.set_obis_batch_withdrawn($1,true) as n', [batch])).rows[0].n, 0)
       assert.equal((await db.query('select deleted_at from sightings where id=$1', [communityReport])).rows[0].deleted_at, null)

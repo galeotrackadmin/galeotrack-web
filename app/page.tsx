@@ -5,6 +5,7 @@ import { SiteHeader } from '@/components/layout/site-header'
 import { SiteFooter } from '@/components/layout/site-footer'
 import { Icon } from '@/components/icons'
 import { PublicTracker } from '@/components/tracker/public-tracker'
+import { PublicSessionLinks } from '@/components/layout/public-session-links'
 import './landing.css'
 
 export const metadata: Metadata = {
@@ -58,6 +59,7 @@ export default function Home() {
       <SiteHeader home />
 
       <main id="main-content" tabIndex={-1}>
+        <nav className="landing-mobile-access page-container" aria-label="Acceso a tu cuenta"><PublicSessionLinks prominent /></nav>
         <section className="landing-hero landing-hero--tracker" aria-labelledby="hero-title">
           <div className="landing-hero-media">
             <Image src="/images/landing/ocean-shark.webp" alt="" fill sizes="100vw" loading="eager" fetchPriority="high" className="landing-photo" />
@@ -66,7 +68,7 @@ export default function Home() {
             <h1 id="hero-title">Conectando la ciencia y la comunidad por los tiburones de Puerto Rico.</h1>
             <p className="landing-hero-description">Una iniciativa de ciencia ciudadana e investigación marina para recopilar, mapear y divulgar datos sobre las poblaciones de tiburones en las aguas costeras del archipiélago.</p>
             <div className="landing-hero-actions">
-              <a href="#colaboradores" className="button landing-button landing-button--outline">Cómo colaborar</a>
+              <a href="#colaboradores" className="button landing-button landing-button--outline landing-collaborate"><span>Cómo colaborar</span><span className="landing-collaborate-fill" aria-hidden="true">Cómo colaborar</span></a>
             </div>
           </div>
         </section>

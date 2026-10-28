@@ -11,10 +11,11 @@ import { supabase } from '@/lib/supabase-client'
 import { formatSightingDate, loadPublicMapSightings, type PublicMapSighting } from '@/lib/sightings/public-map'
 import './public-tracker.css'
 import { PublicSightingReview } from './public-sighting-review'
+import { MapSkeleton } from '@/components/ui/loading-state'
 
 const TrackerMap = dynamic(() => import('./public-tracker-map'), {
   ssr: false,
-  loading: () => <div className="tracker-map-loading" role="status"><span className="ui-spinner" /> Preparando el mapa de Puerto Rico…</div>,
+  loading: () => <MapSkeleton label="Preparando el mapa de Puerto Rico…" className="tracker-map-loading" />,
 })
 
 export function PublicTracker({ compact = false }: { compact?: boolean }) {
@@ -42,10 +43,9 @@ export function PublicTracker({ compact = false }: { compact?: boolean }) {
 
   if (compact) return <section id="mapa" className="public-tracker public-tracker--compact" aria-label="Mapa público de avistamientos">
     <div className="tracker-canvas" role="region" aria-label="Mapa interactivo de avistamientos en Puerto Rico" aria-describedby="tracker-map-help">
-      <TrackerMap rows={resource.data ?? []} selected={selected} onSelect={select} compact />
+      {resource.loading ? <MapSkeleton label="Cargando avistamientos…" className="tracker-map-loading" /> : <TrackerMap rows={resource.data ?? []} selected={selected} onSelect={select} compact />}
       <p id="tracker-map-help" className="sr-only">Selecciona un marcador para consultar su ficha. Usa los botones para acercar o alejar el mapa.</p>
     </div>
-    {resource.loading && <p className="tracker-map-status" role="status">Cargando avistamientos…</p>}
     {resource.error && <div className="tracker-map-status tracker-map-status--error" role="status"><span>{resource.error}</span><Button variant="secondary" onClick={resource.refresh}>Reintentar</Button></div>}
     {!resource.loading && !resource.error && !resource.data?.length && <p className="tracker-map-status" role="status">No hay avistamientos activos con coordenadas para mostrar.</p>}
   </section>

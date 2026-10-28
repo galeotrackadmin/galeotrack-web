@@ -38,8 +38,8 @@ test('community puede editar y borrar su avistamiento, mientras estudiante solo 
   await page.getByLabel('Notas adicionales').fill('Editado por su autora.')
   await page.getByRole('button', { name: 'Guardar cambios' }).click()
   await expect(page).toHaveURL(/\/comunidad$/)
-  page.on('dialog', (dialog) => dialog.accept())
   await page.getByRole('button', { name: 'Eliminar avistamiento de Tiburón gata (Ginglymostoma cirratum)' }).click()
+  await page.getByRole('alertdialog').getByRole('button', { name: 'Eliminar avistamiento', exact: true }).click()
   await expect(page.getByRole('button', { name: 'Eliminar avistamiento de Tiburón gata (Ginglymostoma cirratum)' })).toHaveCount(0)
   await expect(page.getByText('11 registros · Página 1 de 2')).toBeVisible()
 
@@ -65,7 +65,7 @@ for (const [role, route, heading] of [
     await expect(page.getByRole('heading', { name: heading, exact: true })).toBeVisible()
     if (role !== 'pending_scientist') {
       await expect(page.getByRole('heading', { name: 'Avistamientos y estadísticas', exact: true })).toBeVisible()
-      await expect(page.getByText('12 registros · Página 1 de 2')).toBeVisible()
+      await expect(page.getByText(role === 'student' ? 'Mostrando 3 de 12 avistamientos' : '12 registros · Página 1 de 2')).toBeVisible()
       await expect(page.getByRole('button', { name: /Aprobar avistamiento/ })).toHaveCount(0)
     }
     const accessibility = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).exclude('nextjs-portal').analyze()

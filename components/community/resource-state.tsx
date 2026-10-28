@@ -1,8 +1,9 @@
 import { Alert } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
+import { CardsSkeleton, ListSkeleton } from '@/components/ui/loading-state'
 
-export function ResourceState({ loading, error, retry }: { loading: boolean; error?: string; retry: () => void }) {
-  if (loading) return <p role="status" className="rounded-2xl bg-soft p-6 text-muted">Cargando datos…</p>
+export function ResourceState({ loading, error, retry, layout = 'cards' }: { loading: boolean; error?: string; retry: () => void; layout?: 'cards' | 'list' }) {
+  if (loading) return layout === 'list' ? <ListSkeleton /> : <CardsSkeleton />
   if (error) return <Alert kind="error"><p>{error}</p><Button variant="secondary" onClick={retry} className="mt-3">Reintentar</Button></Alert>
   return null
 }

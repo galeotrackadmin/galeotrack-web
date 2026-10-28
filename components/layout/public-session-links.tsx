@@ -7,7 +7,7 @@ import { supabase } from '@/lib/supabase-client'
 import { useResource } from '@/lib/use-resource'
 
 // La portada no cierra la sesión: permite volver al espacio sin introducir credenciales.
-export function PublicSessionLinks() {
+export function PublicSessionLinks({ prominent = false }: { prominent?: boolean }) {
   const [revision, setRevision] = useState(0)
   const load = useCallback(async () => {
     void revision
@@ -26,10 +26,10 @@ export function PublicSessionLinks() {
     return () => subscription.unsubscribe()
   }, [])
 
-  if (resource.loading) return <span className="site-nav-link" role="status">Comprobando sesión…</span>
-  if (resource.data || resource.error) return <Link href={resource.data ?? '/cuenta'} className="site-nav-link">Mi espacio</Link>
+  if (resource.loading) return <span className={prominent ? 'landing-session-pending' : 'site-nav-link'} role="status"><span className="sr-only">Comprobando sesión…</span><span className="ui-skeleton h-5 w-32" aria-hidden="true" /></span>
+  if (resource.data || resource.error) return <Link href={resource.data ?? '/cuenta'} className={prominent ? 'button button--primary' : 'site-nav-link'}>Mi espacio</Link>
   return <>
-    <Link href="/login" className="site-nav-link">Iniciar sesión</Link>
-    <Link href="/register" className="button site-signup-button">Crear cuenta</Link>
+    <Link href="/login" className={prominent ? 'button button--primary' : 'site-nav-link'}>Iniciar sesión</Link>
+    <Link href="/register" className={prominent ? 'button button--ghost' : 'button site-signup-button'}>Crear cuenta</Link>
   </>
 }

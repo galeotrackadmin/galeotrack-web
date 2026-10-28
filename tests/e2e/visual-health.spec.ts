@@ -2,7 +2,7 @@ import AxeBuilder from '@axe-core/playwright'
 import { test, expect, login } from './fixtures'
 import { statisticsMock } from './statistics-mock'
 
-for (const [role, route] of [['student', '/estudiante'], ['researcher', '/cientifico'], ['community', '/comunidad']] as const) {
+for (const [role, route] of [['community', '/comunidad']] as const) {
   for (const width of [375, 1440]) {
     test(`${role}: composición en barras y salud circular con porcentajes por registro a ${width}px`, async ({ page, backend }, testInfo) => {
       const row = backend.rows[0]
@@ -85,8 +85,8 @@ test('salud visual: una migración pendiente no inventa porcentajes ni rompe las
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(stats) })
   })
   await login(page)
-  backend.profileRole = 'student'
-  await page.goto('/estudiante')
+  backend.profileRole = 'community'
+  await page.goto('/comunidad')
   const summary = page.getByRole('region', { name: 'Resumen estadístico', exact: true })
   const health = summary.getByRole('figure', { name: 'Salud visual', exact: true })
   await expect(health.getByRole('note')).toContainText('202610170001_visual_health_statistics.sql')

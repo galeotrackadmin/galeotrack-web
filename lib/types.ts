@@ -23,6 +23,7 @@ export type Sighting = {
   behavior: string | null
   notes: string | null
   status: SightingStatus
+  updated_at?: string | null
   deleted_at?: string | null
   import_batch_id?: string | null
   source_name?: string | null

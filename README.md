@@ -19,8 +19,8 @@ Plataforma de conservación marina con espacios de estudiante, científico, buzo
 - Revisión de avistamientos exclusiva del rol `admin`; el administrador también accede a los tres modos.
 - Contadores globales de pendientes, verificados y rechazados, calculados mediante consultas de conteo exacto.
 - Filtro por estado y paginación de 10 registros, ordenados del más reciente al más antiguo, con desempate por ID.
-- Revisión de registros pendientes con identificación del revisor y fecha de revisión.
-- Protección frente a envíos duplicados y revisiones concurrentes: la actualización exige que el registro siga en estado `pending` y comprueba la fila devuelta.
+- Revisión de registros pendientes y corrección de rechazados ↔ verificados, exclusiva de administración. Las correcciones requieren confirmación y actualizan el administrador y la fecha de la última revisión.
+- Protección frente a envíos duplicados y revisiones concurrentes: cada revisión compara el estado y `updated_at` mostrados en el panel, excluye registros eliminados y comprueba la fila devuelta. Si otro administrador lo modificó, se recarga el listado sin sobrescribirlo.
 - Estados de carga, mensajes de resultado y reintentos para errores de consulta.
 - Detalles desplegables de cada avistamiento: tamaño estimado, coordenadas, comportamiento y notas, accesibles con teclado.
 
@@ -385,7 +385,18 @@ La portada añade una composición oceánica oscura en `app/landing.css`, docume
 
 Los módulos extienden esta identidad mediante `PageHeading` (cabeceras fotográficas), `SectionLinks` (accesos visuales) y superficies oscuras para datos y formularios. Su composición está documentada en `design-system/galeotrack/pages/workspaces.md`.
 
-## Comprobaciones
+## Aplicación instalable (PWA)
+
+GaleoTrack incluye instalación desde el navegador, instrucciones para Apple/Chromium,
+pantalla offline sin datos privados y actualizaciones voluntarias protegidas frente a trabajo sin guardar.
+La implementación conserva Supabase/PKCE, el tema oscuro y Turbopack; no requiere tiendas ni plugins PWA.
+
+Consulta [la guía PWA](docs/PWA.md) para arquitectura, archivos, políticas de caché,
+límites por plataforma, pruebas físicas pendientes y despliegue en Vercel.
+El worker se genera al ejecutar `npm run build` y solo se registra en producción.
+Después del build, `npm run test:pwa` ejecuta las pruebas específicas contra `next start`.
+
+## Comprobaciones generales
 
 ```bash
 npm run lint

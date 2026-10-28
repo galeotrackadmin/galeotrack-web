@@ -37,6 +37,7 @@ export function AdminDashboard() {
         <PageHeading compact eyebrow="ADMINISTRACIÓN" title="Panel de revisión" description={<p>Bienvenido{reviewer.fullName ? `, ${reviewer.fullName}` : ''}. Revisa y valida los avistamientos de nuestra comunidad.</p>} />
 
         <nav aria-label="Modos del administrador" className="workspace-shortcuts">
+          <a href="#mapa-avistamientos" className="button button--secondary">Mapa de avistamientos<Icon name="pin" /></a>
           <Link href="/report" className="button button--primary">Reportar avistamiento<Icon name="pin" /></Link>
           <a href="#sightings-heading" className="button button--secondary">Revisar avistamientos<Icon name="arrow" /></a>
           <a href="#estadisticas" className="button button--secondary">Resumen estadístico<Icon name="arrow" /></a>
@@ -45,6 +46,7 @@ export function AdminDashboard() {
 
         {notice && <Alert kind={notice.kind} className="mb-6">{notice.message}</Alert>}
 
+        <div className="admin-map admin-map--top"><SightingsExplorer id="mapa-avistamientos" headingLevel={2} key={`${data?.counts.pending}-${data?.counts.verified}-${data?.counts.rejected}`} filter={dashboard.filter} /></div>
         <StatisticsDashboard mode="admin" revision={dashboard.revision} />
 
         <section className="admin-section" aria-labelledby="sightings-heading">
@@ -73,7 +75,6 @@ export function AdminDashboard() {
               </>
             )}
           </div>
-          <div className="admin-map"><SightingsExplorer key={`${data?.counts.pending}-${data?.counts.verified}-${data?.counts.rejected}`} filter={dashboard.filter} /></div>
         </section>
         <section id="community-tools" className="admin-section" aria-labelledby="community-tools-heading">
           <p className="section-eyebrow">Diferentes miradas · Un mismo océano</p>

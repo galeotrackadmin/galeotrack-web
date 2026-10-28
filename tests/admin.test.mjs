@@ -24,6 +24,7 @@ function sighting(id, status = 'pending') {
     notes: null,
     status,
     created_at: '2026-09-24T00:00:00.000Z',
+    updated_at: '2026-09-24T00:00:00.000Z',
   }
 }
 
@@ -92,8 +93,11 @@ function createBackend(options = {}) {
         assert.equal(url.pathname, '/rest/v1/sightings', 'Petición inesperada')
         const statusFilter = url.searchParams.get('status')?.replace(/^eq\./, '')
         const idFilter = url.searchParams.get('id')?.replace(/^eq\./, '')
+        const updatedAtFilter = url.searchParams.get('updated_at')
         const matching = state.rows.filter((row) =>
-          (!statusFilter || row.status === statusFilter) && (!idFilter || row.id === idFilter)
+          (!statusFilter || row.status === statusFilter) && (!idFilter || row.id === idFilter) &&
+          (url.searchParams.get('deleted_at') !== 'is.null' || row.deleted_at == null) &&
+          (!updatedAtFilter || (updatedAtFilter === 'is.null' ? row.updated_at == null : row.updated_at === updatedAtFilter.slice(3)))
         )
 
         if (method === 'HEAD') {
@@ -265,7 +269,7 @@ test('dos revisiones concurrentes no sobrescriben el primer resultado', async ()
 })
 
 for (const status of ['verified', 'rejected']) {
-  test(`un registro ${status} no se vuelve a revisar`, async () => {
+  test(`un registro ${status} no se vuelve a revisar sin solicitar una corrección explícita`, async () => {
     const row = sighting('one', status)
     const { client } = createBackend({ rows: [row] })
     assert.equal(await reviewSighting(client, row.id, 'verified'), false)
@@ -273,6 +277,78 @@ for (const status of ['verified', 'rejected']) {
     assert.equal(row.verified_by, undefined)
   })
 }
+
+for (const [before, after] of [['rejected', 'verified'], ['verified', 'rejected']]) {
+  test(`administración corrige ${before} → ${after} conservando el avistamiento`, async () => {
+    const row = sighting('one', before)
+    const { client, requests } = createBackend({ rows: [row] })
+    const previous = { status: row.status, updated_at: row.updated_at }
+    assert.equal(await reviewSighting(client, row.id, after, previous), true)
+    assert.equal(row.status, after)
+    assert.equal(row.verified_by, user.id)
+    assert.equal(row.verified_at, row.updated_at)
+    assert.equal(row.species, 'Especie de prueba')
+    assert.equal(row.created_at, '2026-09-24T00:00:00.000Z')
+    const patch = requests.find(({ method }) => method === 'PATCH')
+    assert.equal(patch.url.searchParams.get('status'), `eq.${before}`)
+    assert.equal(patch.url.searchParams.get('updated_at'), `eq.${previous.updated_at}`)
+    assert.equal(patch.url.searchParams.get('deleted_at'), 'is.null')
+  })
+}
+
+test('una corrección exige la versión del registro mostrada en el panel', async () => {
+  const row = sighting('one', 'rejected')
+  const { client, requests } = createBackend({ rows: [row] })
+  await assert.rejects(reviewSighting(client, row.id, 'verified', { status: 'rejected' }), /Actualiza el listado/)
+  assert.equal(requests.some(({ method }) => method === 'PATCH'), false)
+})
+
+test('dos correcciones concurrentes no sobrescriben la primera revisión', async () => {
+  const row = sighting('one', 'verified')
+  const previous = { status: row.status, updated_at: row.updated_at }
+  const { client } = createBackend({ rows: [row] })
+  const results = await Promise.all([
+    reviewSighting(client, row.id, 'rejected', previous),
+    reviewSighting(client, row.id, 'rejected', previous),
+  ])
+  assert.equal(results.filter(Boolean).length, 1)
+  assert.equal(row.status, 'rejected')
+})
+
+test('volver al mismo estado no permite corregir una versión antigua del registro', async () => {
+  const row = { ...sighting('one', 'verified'), updated_at: '2026-09-26T00:00:00.000Z', verified_by: 'another-admin' }
+  const { client } = createBackend({ rows: [row] })
+  assert.equal(await reviewSighting(client, row.id, 'rejected', { status: 'verified', updated_at: '2026-09-24T00:00:00.000Z' }), false)
+  assert.equal(row.status, 'verified')
+  assert.equal(row.verified_by, 'another-admin')
+})
+
+test('las versiones históricas sin updated_at se comparan con IS NULL', async () => {
+  const row = { ...sighting('one', 'rejected'), updated_at: null }
+  const { client, requests } = createBackend({ rows: [row] })
+  assert.equal(await reviewSighting(client, row.id, 'verified', { status: 'rejected', updated_at: null }), true)
+  assert.equal(requests.find(({ method }) => method === 'PATCH').url.searchParams.get('updated_at'), 'is.null')
+})
+
+test('no se corrigen avistamientos eliminados ni se vuelve a guardar el mismo estado', async () => {
+  const removed = { ...sighting('removed', 'rejected'), deleted_at: '2026-09-25T00:00:00.000Z' }
+  const unchanged = sighting('unchanged', 'verified')
+  const { client, requests } = createBackend({ rows: [removed, unchanged] })
+  assert.equal(await reviewSighting(client, removed.id, 'verified', { status: removed.status, updated_at: removed.updated_at }), false)
+  assert.equal(removed.status, 'rejected')
+  const patches = requests.filter(({ method }) => method === 'PATCH').length
+  assert.equal(await reviewSighting(client, unchanged.id, 'verified', { status: unchanged.status, updated_at: unchanged.updated_at }), false)
+  assert.equal(requests.filter(({ method }) => method === 'PATCH').length, patches)
+})
+
+test('un perfil no administrador tampoco puede corregir revisiones anteriores', async () => {
+  for (const role of ['community', 'researcher', 'student', 'pending_scientist']) {
+    const row = sighting('one', 'rejected')
+    const { client, requests } = createBackend({ rows: [row], profile: { role } })
+    await assert.rejects(reviewSighting(client, row.id, 'verified', { status: row.status, updated_at: row.updated_at }), AdminAccessError)
+    assert.equal(requests.some(({ method }) => method === 'PATCH'), false)
+  }
+})
 
 test('un registro inexistente no se anuncia como actualizado', async () => {
   const { client } = createBackend()

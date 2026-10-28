@@ -6,6 +6,8 @@ import { AdminAccessError, getReviewer, loadDashboard, reviewSighting } from '@/
 import { supabase } from '@/lib/supabase-client'
 import { dashboardQueryUrl, parseDashboardQuery } from '@/lib/dashboard-query'
 import type { DashboardData, Reviewer, ReviewStatus, SightingFilter } from '@/lib/types'
+import { useUpdateGuard } from '@/lib/pwa/use-update-guard'
+import { useConfirmation } from '@/components/ui/confirmation-provider'
 
 type Query = { filter: SightingFilter; page: number; revision: number }
 type Notice = { kind: 'success' | 'error' | 'info'; message: string }
@@ -15,6 +17,7 @@ function errorMessage(error: unknown) {
 }
 
 export function useAdminDashboard() {
+  const confirm = useConfirmation()
   const router = useRouter()
   const searchParams = useSearchParams()
   const { filter, page } = parseDashboardQuery(searchParams)
@@ -34,6 +37,7 @@ export function useAdminDashboard() {
   const [notice, setNotice] = useState<Notice | null>(null)
   const [reviewingId, setReviewingId] = useState<string | null>(null)
   const [loggingOut, setLoggingOut] = useState(false)
+  useUpdateGuard(Boolean(reviewingId || loggingOut))
   const actionInFlight = useRef(false)
   const mounted = useRef(false)
 
@@ -124,16 +128,26 @@ export function useAdminDashboard() {
 
   async function review(id: string, status: ReviewStatus) {
     if (actionInFlight.current || loadingData || !access.reviewer) return
+    const sighting = result.data?.sightings.find((row) => row.id === id)
+    if (!sighting || sighting.status === status) return
+    const previous = { status: sighting.status, updated_at: sighting.updated_at }
+    const correction = previous.status !== 'pending'
     actionInFlight.current = true
-    setReviewingId(id)
-    setNotice(null)
 
     try {
-      const updated = await reviewSighting(supabase, id, status)
+      if (correction && !await confirm({
+        title: status === 'verified' ? '¿Marcar este avistamiento como verificado?' : '¿Marcar este avistamiento como rechazado?',
+        description: `${sighting.species || 'Especie desconocida'}. El estado cambiará de ${previous.status === 'verified' ? 'Verificado' : 'Rechazado'} a ${status === 'verified' ? 'Verificado' : 'Rechazado'}. ${status === 'rejected' ? 'Dejará de aparecer en el mapa público.' : 'Podrá aparecer en el mapa público si tiene coordenadas válidas.'} Se registrarán tu usuario y la fecha como la última revisión. No se eliminarán los datos del avistamiento.`,
+        action: status === 'verified' ? 'Marcar como verificado' : 'Marcar como rechazado',
+      })) return
+      if (!mounted.current) return
+      setReviewingId(id)
+      setNotice(null)
+      const updated = await reviewSighting(supabase, id, status, previous)
       if (!mounted.current) return
       setNotice(updated
-        ? { kind: 'success', message: status === 'verified' ? 'Avistamiento aprobado.' : 'Avistamiento rechazado.' }
-        : { kind: 'info', message: 'No se modificó el registro: ya fue revisado, no existe o no tienes permiso para editarlo. Se actualizará el listado.' }
+        ? { kind: 'success', message: correction ? `Estado corregido a ${status === 'verified' ? 'verificado' : 'rechazado'}.` : status === 'verified' ? 'Avistamiento aprobado.' : 'Avistamiento rechazado.' }
+        : { kind: 'info', message: 'No se modificó el registro: cambió desde que lo abriste, fue eliminado o no tienes permiso para editarlo. Se actualizará el listado.' }
       )
       refresh()
     } catch (error) {

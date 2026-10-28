@@ -12,7 +12,7 @@ import type {
 export const PAGE_SIZE = 10
 
 const SIGHTING_COLUMNS =
-  'id, reporter_id, species, location_name, sighting_date, quantity, estimated_size, latitude, longitude, behavior, notes, status, import_batch_id, source_name, source_year, source_month, date_precision'
+  'id, reporter_id, species, location_name, sighting_date, quantity, estimated_size, latitude, longitude, behavior, notes, status, updated_at, import_batch_id, source_name, source_year, source_month, date_precision'
 
 export class AdminAccessError extends Error {
   constructor(message = 'Tu sesión terminó o no tienes acceso al panel.') {
@@ -84,7 +84,7 @@ export async function loadDashboard(
   const counts = { pending, verified, rejected }
   const total = filter === 'all' ? pending + verified + rejected : counts[filter]
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
-  // Una revisión puede vaciar la última página del filtro de pendientes.
+  // Una revisión o corrección puede vaciar la última página del filtro actual.
   const page = Math.min(Math.max(1, requestedPage), totalPages)
 
   let query = client.from('sightings').select(SIGHTING_COLUMNS).is('deleted_at', null)
@@ -111,12 +111,20 @@ export async function loadDashboard(
 export async function reviewSighting(
   client: SupabaseClient,
   id: string,
-  status: ReviewStatus
+  status: ReviewStatus,
+  previous: Pick<Sighting, 'status' | 'updated_at'> = { status: 'pending' },
 ): Promise<boolean> {
   const reviewer = await getReviewer(client)
+  if (!['verified', 'rejected'].includes(status) || !['pending', 'verified', 'rejected'].includes(previous.status)) {
+    throw new Error('Cambio de estado no válido.')
+  }
+  if (previous.status === status) return false
+  if (previous.status !== 'pending' && previous.updated_at === undefined) {
+    throw new Error('Actualiza el listado antes de corregir la revisión.')
+  }
   const reviewedAt = new Date().toISOString()
 
-  const { data, error } = await client
+  let query = client
     .from('sightings')
     .update({
       status,
@@ -125,7 +133,15 @@ export async function reviewSighting(
       updated_at: reviewedAt,
     })
     .eq('id', id)
-    .eq('status', 'pending')
+    .eq('status', previous.status)
+    .is('deleted_at', null)
+
+  // Compare the version shown before confirmation, including historical NULL timestamps.
+  if (previous.updated_at !== undefined) {
+    query = previous.updated_at === null ? query.is('updated_at', null) : query.eq('updated_at', previous.updated_at)
+  }
+
+  const { data, error } = await query
     .select('id')
     .maybeSingle<{ id: string }>()
 

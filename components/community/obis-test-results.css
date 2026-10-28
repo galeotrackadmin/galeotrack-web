@@ -1,0 +1,24 @@
+.obis-test-results { display: grid; gap: 24px; min-width: 0; }
+.obis-test-figure { overflow: hidden; }
+.obis-test-caption { padding: 20px; }
+.obis-test-caption h4 { font-size: 1.125rem; line-height: 1.5; font-weight: 600; }
+.obis-test-caption h4 > span { color: var(--primary); }
+.obis-test-caption p { max-width: 70ch; margin-top: 8px; color: var(--muted); font-size: .875rem; line-height: 1.65; }
+/* El fondo blanco y los colores conservan el estilo de las figuras del PDF. */
+.obis-test-chart-scroll { max-width: 100%; overflow-x: auto; overflow-y: hidden; background: white; overscroll-behavior-x: contain; }
+.obis-test-chart-scroll:focus-visible { outline: 3px solid var(--primary); outline-offset: -3px; }
+.obis-test-chart-frame { height: 28rem; min-width: 46rem; }
+.obis-test-chart-frame--abundance { height: 34rem; min-width: 58rem; }
+.obis-test-chart-frame--depth { height: 27rem; min-width: 44rem; }
+.obis-test-echart { height: 100%; width: 100%; }
+.obis-test-data { margin: 0 20px 20px; border-top: 1px solid var(--border); }
+.obis-test-data summary { min-height: 44px; padding-block: 12px; color: var(--primary); font-size: .875rem; font-weight: 600; cursor: pointer; }
+.obis-test-data table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: .875rem; }
+.obis-test-data caption { padding-block: 12px; text-align: left; color: var(--muted); }
+.obis-test-data :is(th, td) { padding: 12px 4px; border-bottom: 1px solid var(--border); text-align: left; overflow-wrap: anywhere; }
+.obis-test-data th { font-weight: 500; }
+.obis-test-data td { font-variant-numeric: tabular-nums; }
+@media (min-width: 768px) {
+  .obis-test-caption { padding: 24px; }
+  .obis-test-data { margin-inline: 24px; margin-bottom: 24px; }
+}

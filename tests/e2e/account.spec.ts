@@ -22,8 +22,8 @@ test('se puede editar el nombre y cambiar de perfil conservando reportes', async
   expect(backend.profileName).toBe('María Rivera del Mar')
 
   await page.getByLabel('Quiero participar como').selectOption('student')
-  page.once('dialog', (dialog) => dialog.accept())
   await page.getByRole('button', { name: 'Guardar cambio de perfil' }).click()
+  await page.getByRole('alertdialog').getByRole('button', { name: 'Cambiar perfil', exact: true }).click()
   await expect(page.getByRole('status')).toContainText('Tu perfil se actualizó. Los reportes existentes se conservaron.')
   expect(backend.profileRole).toBe('student')
   expect(backend.roleHistory).toHaveLength(1)

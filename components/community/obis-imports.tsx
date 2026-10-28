@@ -7,8 +7,12 @@ import { parseObisCsv, summarizeObis, type ImportBatch, type ObisRecord } from '
 import { Alert } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { FormField, Input } from '@/components/ui/form-field'
+import { useConfirmation } from '@/components/ui/confirmation-provider'
+import { ListSkeleton } from '@/components/ui/loading-state'
+import { useUpdateGuard } from '@/lib/pwa/use-update-guard'
 
 export function ObisImports() {
+  const confirm = useConfirmation()
   const load = useCallback(async (signal?: AbortSignal) => {
     let query = supabase.from('sighting_import_batches').select('id,file_name,row_count,duplicate_count,status,created_at,quality_summary').order('created_at', { ascending: false }).limit(100)
     if (signal) query = query.abortSignal(signal)
@@ -23,6 +27,7 @@ export function ObisImports() {
   const inFlight = useRef(false)
   const fileInput = useRef<HTMLInputElement>(null)
   const fileRevision = useRef(0)
+  useUpdateGuard(Boolean(busy || preview))
 
   async function chooseFile(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
@@ -40,7 +45,7 @@ export function ObisImports() {
 
   async function importFile() {
     if (!preview || inFlight.current) return
-    if (!window.confirm(`¿Importar ${preview.records.length} registros de ${preview.name} como lote OBIS pendiente? Se conservarán los posibles duplicados. Los registros activos con coordenadas serán visibles en el mapa público con la advertencia de revisión pendiente en su tarjeta.`)) return
+    if (!await confirm({ title: `¿Importar ${preview.records.length} registros?`, description: `${preview.name} se guardará como lote OBIS pendiente. Se conservarán los posibles duplicados. Los registros activos con coordenadas serán visibles en el mapa público con la advertencia de revisión pendiente en su tarjeta.`, action: 'Importar lote' })) return
     inFlight.current = true; setBusy('import'); setNotice(null)
     try {
       const { data, error } = await supabase.rpc('import_obis_batch', { file_name: preview.name, records: preview.records })
@@ -56,9 +61,9 @@ export function ObisImports() {
   async function toggleBatch(batch: ImportBatch) {
     if (inFlight.current) return
     const withdraw = batch.status !== 'withdrawn'
-    if (!window.confirm(withdraw
-      ? `¿Retirar todo el lote ${batch.file_name} (${batch.row_count} registros)? Sus registros activos se ocultarán de los listados y mapas. No afecta otros lotes ni reportes comunitarios.`
-      : `¿Restaurar el lote ${batch.file_name}? Los registros retirados por el lote volverán como pendientes y serán visibles en el mapa público con su advertencia; no se marcarán como verificados.`)) return
+    if (!await confirm({ title: withdraw ? '¿Retirar el lote completo?' : '¿Restaurar este lote?', description: withdraw
+      ? `${batch.file_name} (${batch.row_count} registros). Sus registros activos se ocultarán de los listados y mapas. No afecta otros lotes ni reportes comunitarios.`
+      : `${batch.file_name}. Los registros retirados por el lote volverán como pendientes y serán visibles en el mapa público con su advertencia; no se marcarán como verificados.`, action: withdraw ? 'Retirar lote' : 'Restaurar lote', danger: withdraw })) return
     inFlight.current = true; setBusy(batch.id); setNotice(null)
     try {
       const { data, error } = await supabase.rpc('set_obis_batch_withdrawn', { batch_id: batch.id, withdraw })
@@ -86,7 +91,7 @@ export function ObisImports() {
       </>}
     </div>
     <div className="flex flex-wrap items-center justify-between gap-3"><h3 className="text-lg font-semibold">Historial de lotes</h3><Button variant="secondary" disabled={busy !== '' || resource.loading} onClick={resource.refresh}>Actualizar lotes</Button></div>
-    {resource.loading && <p role="status" className="text-muted">Cargando lotes…</p>}
+    {resource.loading && <ListSkeleton label="Cargando lotes…" />}
     {resource.error && <Alert kind="error">{resource.error}</Alert>}
     {resource.data?.length === 0 && <p className="text-muted">Aún no hay lotes importados.</p>}
     <ul className="grid gap-4">{resource.data?.map((batch) => <li key={batch.id} className="ui-card space-y-3 p-5"><div className="flex flex-wrap items-start justify-between gap-4"><div><h4 className="font-semibold">{batch.file_name}</h4><p className="mt-1 text-sm text-muted">OBIS · {batch.row_count} registros · {new Date(batch.created_at).toLocaleDateString('es-PR')}</p><p className="mt-1 text-sm">Estado: {batch.status === 'withdrawn' ? 'Retirado' : 'Importado para revisión'}</p></div><Button variant={batch.status === 'withdrawn' ? 'secondary' : 'danger'} loading={busy === batch.id} disabled={busy !== ''} onClick={() => void toggleBatch(batch)}>{batch.status === 'withdrawn' ? 'Restaurar lote' : 'Retirar lote completo'}</Button></div><p className="text-sm text-muted">{batch.duplicate_count} posibles duplicados · {batch.quality_summary.missing_dates ?? 0} sin fecha · {batch.quality_summary.partial_dates ?? 0} fechas parciales.</p><p className="break-all text-xs text-muted">Identificador del lote: {batch.id}</p></li>)}</ul>

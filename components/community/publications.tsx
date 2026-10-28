@@ -9,8 +9,11 @@ import { Button } from '@/components/ui/button'
 import { FormField, Input, Select, Textarea } from '@/components/ui/form-field'
 import { Alert } from '@/components/ui/alert'
 import { ResourceState, Pagination } from './resource-state'
+import { useUpdateGuard } from '@/lib/pwa/use-update-guard'
 
 function PublicationEditor({ publication, onSaved, onCancel }: { publication: Publication | null; onSaved: () => void; onCancel: () => void }) {
+  // An open editor is intentionally conservative, even before its first keystroke.
+  useUpdateGuard(true)
   const profile = useProfile()
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')

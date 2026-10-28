@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 
 // Cada respuesta queda ligada a su consulta; cambios de filtro ignoran peticiones antiguas.
-export function useResource<T>(load: (signal?: AbortSignal) => Promise<T>) {
+export function useResource<T>(load: (signal?: AbortSignal) => Promise<T>, { retainOnRefresh = false }: { retainOnRefresh?: boolean } = {}) {
   const [revision, setRevision] = useState(0)
   const [result, setResult] = useState<{ load: typeof load; revision: number; data?: T; error?: string } | null>(null)
   useEffect(() => {
@@ -17,5 +17,7 @@ export function useResource<T>(load: (signal?: AbortSignal) => Promise<T>) {
     return () => { active = false; controller.abort() }
   }, [load, revision])
   const current = result?.load === load && result?.revision === revision
-  return { data: current ? result.data : undefined, error: current ? result.error : undefined, loading: !current, refresh: () => setRevision((n) => n + 1) }
+  // Solo conservar durante un refresco de la MISMA consulta: nunca mezclar filtros.
+  const retained = retainOnRefresh && result?.load === load && !current ? result.data : undefined
+  return { data: current ? result.data : retained, error: current ? result.error : undefined, loading: !current, refresh: () => setRevision((n) => n + 1) }
 }

@@ -1,0 +1,35 @@
+.sighting-record { min-width: 0; padding: 16px; }
+.sighting-record-header { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 8px 12px; }
+.sighting-record-heading { min-width: 0; padding-top: 10px; overflow-wrap: anywhere; }
+.sighting-record-heading h3 { color: var(--foreground); font-size: 1rem; line-height: 1.45; font-weight: 650; }
+.sighting-record-source { margin-top: 4px; color: var(--primary); font-size: .75rem; line-height: 1.5; }
+.sighting-record-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 4px; max-width: 140px; }
+.sighting-record .sighting-icon-button { display: inline-flex; flex: 0 0 44px; align-items: center; justify-content: center; width: 44px; min-width: 44px; max-width: 44px; height: 44px; min-height: 44px; padding: 0; border: 1px solid transparent; border-radius: 10px; color: var(--primary); background: transparent; cursor: pointer; }
+.sighting-record .sighting-icon-button svg { flex-shrink: 0; width: 20px; height: 20px; }
+.sighting-record .sighting-icon-button--danger { color: var(--danger); background: var(--danger-soft); border-color: var(--danger-border); }
+.sighting-record .sighting-icon-button--approve { color: var(--success); }
+.sighting-record .sighting-status--verified { color: var(--success); }
+.sighting-record .sighting-status--pending { color: var(--warning); }
+.sighting-record .sighting-status--rejected { color: var(--danger); }
+.sighting-record .sighting-icon-button:disabled { cursor: not-allowed; opacity: .55; }
+.sighting-record .sighting-icon-button:active:not(:disabled), .sighting-record .sighting-icon-button[aria-expanded="true"] { box-shadow: inset 0 0 0 1px currentColor; }
+.sighting-record .sighting-icon-button[aria-busy="true"] > svg { display: none; }
+.sighting-record-info { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 8px; align-items: center; margin-top: 8px; }
+.sighting-record-place { grid-column: 1; display: flex; align-items: start; gap: 6px; min-width: 0; color: var(--muted); font-size: .875rem; line-height: 1.5; overflow-wrap: anywhere; }
+.sighting-record-place > svg { flex: 0 0 16px; margin-top: 2px; }
+.sighting-record-meta { grid-column: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; min-width: 0; color: var(--muted); font-size: .875rem; line-height: 1.5; }
+.sighting-record-meta > div, .sighting-record-meta dd { display: inline-flex; align-items: center; gap: 6px; min-width: 0; overflow-wrap: anywhere; }
+.sighting-record-meta dd > svg { flex-shrink: 0; }
+.sighting-record-meta dd { font-variant-numeric: tabular-nums; }
+.sighting-record-info > .sighting-icon-button { grid-column: 2; grid-row: 1 / span 2; align-self: end; }
+.sighting-record-detail-panel { margin-top: 12px; padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--background); font-size: .875rem; overflow-wrap: anywhere; }
+.sighting-hint-positioner { z-index: 1250; }
+.sighting-hint { max-width: min(19rem, calc(100vw - 32px)); padding: 14px 16px; border: 1px solid var(--control-border); border-radius: 12px; color: var(--foreground); background: var(--surface); box-shadow: 0 8px 24px #0006; overflow-wrap: anywhere; }
+.sighting-hint-title { font-size: .875rem; font-weight: 650; line-height: 1.5; }
+.sighting-hint-description { margin-top: 4px; color: var(--muted); font-size: .875rem; line-height: 1.6; }
+.sighting-tooltip { padding: 8px 12px; font-size: .875rem; line-height: 1.5; }
+@media (hover: hover) and (pointer: fine) {
+  .sighting-record .sighting-icon-button:hover:not(:disabled) { background: var(--soft); border-color: currentColor; }
+  .sighting-record .sighting-icon-button--danger:hover:not(:disabled) { background: var(--danger-soft); }
+}
+@media (min-width: 768px) { .sighting-record { padding: 16px 20px; } .sighting-record-actions { max-width: none; } }
